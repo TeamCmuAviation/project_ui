@@ -44,10 +44,35 @@ class LoginView(View):
         code = request.POST.get('access_code', '').strip().upper()
         if code in VALID_EVALUATORS:
             request.session['evaluator_id'] = code
-            return redirect('evaluate')
+            return redirect('task_list')
         else:
             messages.error(request, "Invalid access code. Access denied.")
             return redirect('login')
+
+
+class TaskListView(View):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.session.get('evaluator_id'):
+            return redirect('login')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
+        tasks = []
+        try:
+            resp = requests.get(f"{api_base}/classification-results", timeout=5)
+            if resp.status_code == 200:
+                tasks = resp.json()
+            else:
+                messages.error(request, f"Failed to fetch tasks: {resp.text}")
+        except requests.RequestException as e:
+            messages.error(request, f"Error connecting to API: {e}")
+        
+        context = {
+            'tasks': tasks,
+            'evaluator_id': request.session['evaluator_id']
+        }
+        return render(request, 'evaluation_app/task_list.html', context)
 
 
 class EvaluationInterfaceView(View):
@@ -56,62 +81,51 @@ class EvaluationInterfaceView(View):
             return redirect('login')
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request):
-        evaluator_id = request.session['evaluator_id']
+    def get(self, request, uid):
         api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
-
-        # 1. Fetch next task
+        
         try:
-            resp = requests.get(f"{api_base}/api/task/next/{evaluator_id}", timeout=5)
-            if resp.status_code == 404: # Assuming 404 or specific logic for no tasks
-                return render(request, 'evaluation_app/all_tasks_complete.html')
-            
-            # If API returns 200 but empty or specific message for done:
-            task_data = resp.json()
-            if not task_data or not task_data.get('source_uid'):
-                 return render(request, 'evaluation_app/all_tasks_complete.html')
-
-        except requests.RequestException as e:
-            messages.error(request, f"Error connecting to task API: {e}")
-            return render(request, 'evaluation_app/login.html') # Or specific error page
-
-        # 2. Fetch Origin Data
-        source_uid = task_data['source_uid']
-        try:
-            # Note: Endpoint requested in prompt is /full_classification_results/{uid}
-            data_resp = requests.get(f"{api_base}/full_classification_results/{source_uid}", timeout=5)
+            data_resp = requests.get(f"{api_base}/full_classification_results/{uid}", timeout=5)
             if data_resp.status_code != 200:
-                messages.error(request, f"Could not load data for UID {source_uid}")
-                return redirect('login')
+                messages.error(request, f"Could not load data for UID {uid}")
+                return redirect('task_list')
             
             full_data = data_resp.json()
+            # The structure from prompt: "combined JSON payload with classification... and origin"
+            # Let's assume the top level keys are 'origin' and 'classification' or mixed.
+            # Based on earlier code it seemed to be 'origin' key.
+            # Let's assume the API returns the merged dict or specific keys.
+            # Ideally we pass 'full_data' to template and let template handle it, 
+            # but we need 'origin' specifically for display if separated.
+            
+            # Re-reading prompt: "Returns a combined JSON payload with classification (...) and origin (normalized report details)."
+            # So likely: { "id":..., "origin": { ... }, ... }
+            
             origin_data = full_data.get('origin', {})
+            classification_data = full_data # The whole object acts as classification data wrapper
+            
         except requests.RequestException:
              messages.error(request, "Error fetching case details.")
-             return redirect('login')
+             return redirect('task_list')
         
         context = {
             'origin': origin_data,
-            'assignment_id': task_data.get('assignment_id'), # or classification_result_id depending on API
-            'classification_result_id': task_data.get('classification_result_id'),
-            'categories': ICAO_CATEGORIES
+            'classification': classification_data,
+            'categories': ICAO_CATEGORIES,
+            'uid': uid
         }
         return render(request, 'evaluation_app/evaluation_interface.html', context)
 
-    def post(self, request):
+    def post(self, request, uid):
         evaluator_id = request.session['evaluator_id']
         api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
         
-        # Depending on what the task endpoint returned, we might need assignment_id or classification_result_id
-        # The prompt says submit: assignment_id, human_category, confidence, reasoning.
-        # But earlier prompt for FastAPI said: classification_result_id, evaluator_id...
-        # I will match the FastAPI implementation I just did: classification_result_id, evaluator_id, ...
-        # But the prompt for Django says send "assignment_id". 
-        # I will send BOTH to be safe or rely on what I implemented in FastAPI. 
-        # API Implemented: classification_result_id, evaluator_id, human_category, human_confidence, human_reasoning
+        # We need classification_result_id. It should be in the hidden field or inferred.
+        # Let's expect it in POST
+        classification_result_id = request.POST.get('classification_result_id')
         
         payload = {
-            "classification_result_id": request.POST.get('classification_result_id'),
+            "classification_result_id": classification_result_id,
             "evaluator_id": evaluator_id,
             "human_category": request.POST.get('human_category'),
             "human_confidence": float(request.POST.get('human_confidence')),
@@ -121,10 +135,10 @@ class EvaluationInterfaceView(View):
         try:
             submit_resp = requests.post(f"{api_base}/human_evaluation/submit", json=payload, timeout=5)
             if submit_resp.status_code == 200:
-                messages.success(request, "Evaluation Submitted! Thank you.")
+                messages.success(request, f"Evaluation for {uid} Submitted!")
             else:
                 messages.error(request, f"Submission failed: {submit_resp.text}")
         except requests.RequestException as e:
             messages.error(request, f"Submission error: {e}")
 
-        return redirect('evaluate')
+        return redirect('task_list')

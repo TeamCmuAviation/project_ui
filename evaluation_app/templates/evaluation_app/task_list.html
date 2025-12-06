@@ -1,0 +1,72 @@
+{% extends 'evaluation_app/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Classification Task List</h2>
+        <p class="text-muted">Select a case to evaluate from the list below.</p>
+    </div>
+    <div class="col-auto">
+        <span class="badge bg-secondary">Evaluator: {{ evaluator_id }}</span>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if tasks %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Source UID</th>
+                        <th>Final Category</th>
+                        <th>Confidence</th>
+                        <th>Processed At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr>
+                        <td><code>{{ task.source_uid }}</code></td>
+                        <td>
+                            {% if task.final_category %}
+                                <span class="badge bg-primary">{{ task.final_category }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if task.final_confidence %}
+                                {{ task.final_confidence|floatformat:2 }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ task.processed_at|default:"-" }}</td>
+                        <td>
+                            <a href="{% url 'evaluate' task.source_uid %}" class="btn btn-sm btn-outline-primary">
+                                Evaluate
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="text-center py-5">
+                <p class="lead text-muted">No classification results found.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
