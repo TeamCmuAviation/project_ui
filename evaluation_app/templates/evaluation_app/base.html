@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,7 +31,7 @@
             text-align: center;
             border-bottom: 4px solid var(--cmu-black);
             /* Tartan-ish pattern overlay influence */
-            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.1) 10px, rgba(0, 0, 0, 0.1) 20px);
         }
 
         header h1 {
@@ -45,7 +46,7 @@
             margin: 40px auto;
             background: var(--cmu-white);
             padding: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border-left: 10px solid var(--cmu-black);
             border-right: 10px solid var(--cmu-black);
         }
@@ -82,11 +83,13 @@
             border-left: 5px solid;
             background-color: #eee;
         }
+
         .alert-success {
             border-color: #28a745;
             background-color: #d4edda;
             color: #155724;
         }
+
         .alert-error {
             border-color: var(--cmu-red);
             background-color: #f8d7da;
@@ -97,13 +100,18 @@
         .form-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
             font-weight: bold;
             margin-bottom: 8px;
             color: var(--cmu-black);
         }
-        input[type="text"], input[type="number"], textarea, select {
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
             width: 100%;
             padding: 10px;
             border: 2px solid var(--cmu-gray);
@@ -111,35 +119,109 @@
             box-sizing: border-box;
             font-size: 1rem;
         }
-        input:focus, textarea:focus, select:focus {
+
+        input:focus,
+        textarea:focus,
+        select:focus {
             border-color: var(--cmu-red);
             outline: none;
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            display: none;
+            /* Hidden by default */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--cmu-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: var(--cmu-red);
+            font-weight: bold;
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
+
 <body>
 
-<header>
-    <h1>CMU-Africa Classification Validator</h1>
-</header>
+    <header>
+        <h1>CMU-Africa Classification Validator</h1>
+    </header>
 
-<div class="container">
-    {% if messages %}
+    <div class="container">
+        {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
         {% endfor %}
-    {% endif %}
+        {% endif %}
 
-    {% block content %}
-    {% endblock %}
-</div>
+        {% block content %}
+        {% endblock %}
+    </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-{% block extra_js %}{% endblock %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    {% block extra_js %}{% endblock %}
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Show loader on form submit
+            $('form').on('submit', function () {
+                $('#loading-overlay').css('display', 'flex');
+            });
+
+            // Show loader on links that are not # or target="_blank"
+            $('a').on('click', function (e) {
+                var href = $(this).attr('href');
+                if (href && href !== '#' && !href.startsWith('javascript') && $(this).attr('target') !== '_blank') {
+                    $('#loading-overlay').css('display', 'flex');
+                }
+            });
+
+            // Hide on pageshow (back button fix)
+            window.addEventListener('pageshow', function (event) {
+                $('#loading-overlay').hide();
+            });
+        });
+    </script>
 
 </body>
+
 </html>

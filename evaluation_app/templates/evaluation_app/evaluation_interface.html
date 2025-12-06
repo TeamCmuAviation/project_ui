@@ -24,7 +24,7 @@
 </div>
 
 <!-- Evaluation Form -->
-<form method="post" action="{% url 'evaluate' %}">
+<form method="post" action="{% url 'evaluate' uid %}">
     {% csrf_token %}
     <input type="hidden" name="classification_result_id" value="{{ classification_result_id }}">
 

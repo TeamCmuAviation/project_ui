@@ -59,8 +59,20 @@ class TaskListView(View):
     def get(self, request):
         api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
         tasks = []
+        
+        # Pagination Parameters
         try:
-            resp = requests.get(f"{api_base}/classification-results", timeout=5)
+            page = int(request.GET.get('page', 1))
+            if page < 1: page = 1
+        except ValueError:
+            page = 1
+            
+        limit = 50
+        skip = (page - 1) * limit
+
+        try:
+            # Pass skip and limit to the API
+            resp = requests.get(f"{api_base}/classification-results", params={'skip': skip, 'limit': limit}, timeout=120)
             if resp.status_code == 200:
                 tasks = resp.json()
             else:
@@ -68,9 +80,16 @@ class TaskListView(View):
         except requests.RequestException as e:
             messages.error(request, f"Error connecting to API: {e}")
         
+        # Simple pagination logic: if we got full limit, assume there's a next page
+        has_next = len(tasks) == limit
+        has_prev = page > 1
+        
         context = {
             'tasks': tasks,
-            'evaluator_id': request.session['evaluator_id']
+            'evaluator_id': request.session['evaluator_id'],
+            'page': page,
+            'has_next': has_next,
+            'has_prev': has_prev
         }
         return render(request, 'evaluation_app/task_list.html', context)
 
@@ -85,27 +104,38 @@ class EvaluationInterfaceView(View):
         api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
         
         try:
-            data_resp = requests.get(f"{api_base}/full_classification_results/{uid}", timeout=5)
+            # Use bulk endpoint to fetch single item because detail endpoint is missing
+            payload = [uid]
+            data_resp = requests.post(f"{api_base}/full_classification_results_bulk", json=payload, timeout=120)
+            
             if data_resp.status_code != 200:
                 messages.error(request, f"Could not load data for UID {uid}")
                 return redirect('task_list')
             
-            full_data = data_resp.json()
-            # The structure from prompt: "combined JSON payload with classification... and origin"
-            # Let's assume the top level keys are 'origin' and 'classification' or mixed.
-            # Based on earlier code it seemed to be 'origin' key.
-            # Let's assume the API returns the merged dict or specific keys.
-            # Ideally we pass 'full_data' to template and let template handle it, 
-            # but we need 'origin' specifically for display if separated.
+            resp_json = data_resp.json()
+            full_data = resp_json.get('results', {}).get(uid)
             
-            # Re-reading prompt: "Returns a combined JSON payload with classification (...) and origin (normalized report details)."
-            # So likely: { "id":..., "origin": { ... }, ... }
+            if not full_data:
+                 messages.error(request, f"No data found for UID {uid}")
+                 return redirect('task_list')
+
+            # API returns flattened fields for origin (e.g. origin_narrative)
+            # We reconstruct the 'origin' dict so the template works without changes
+            origin_data = {
+                'narrative': full_data.get('origin_narrative'),
+                'date': full_data.get('origin_date'),
+                'phase': full_data.get('origin_phase'),
+                'aircraft_type': full_data.get('origin_aircraft_type'),
+                'location': full_data.get('origin_location'),
+                'operator': full_data.get('origin_operator'),
+                # Add title/description if they map to something, or generic fallback
+                'description': full_data.get('origin_narrative')[:200] + "..." if full_data.get('origin_narrative') else ""
+            }
             
-            origin_data = full_data.get('origin', {})
-            classification_data = full_data # The whole object acts as classification data wrapper
+            classification_data = full_data 
             
-        except requests.RequestException:
-             messages.error(request, "Error fetching case details.")
+        except requests.RequestException as e:
+             messages.error(request, f"Error fetching case details: {e}")
              return redirect('task_list')
         
         context = {
@@ -133,7 +163,7 @@ class EvaluationInterfaceView(View):
         }
 
         try:
-            submit_resp = requests.post(f"{api_base}/human_evaluation/submit", json=payload, timeout=5)
+            submit_resp = requests.post(f"{api_base}/human_evaluation/submit", json=payload, timeout=120)
             if submit_resp.status_code == 200:
                 messages.success(request, f"Evaluation for {uid} Submitted!")
             else:

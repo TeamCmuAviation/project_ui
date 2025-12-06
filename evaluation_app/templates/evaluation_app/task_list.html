@@ -14,11 +14,11 @@
 <div class="card shadow">
     <div class="card-body">
         {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
         {% endif %}
 
         {% if tasks %}
@@ -39,16 +39,16 @@
                         <td><code>{{ task.source_uid }}</code></td>
                         <td>
                             {% if task.final_category %}
-                                <span class="badge bg-primary">{{ task.final_category }}</span>
+                            <span class="badge bg-primary">{{ task.final_category }}</span>
                             {% else %}
-                                <span class="badge bg-secondary">Pending</span>
+                            <span class="badge bg-secondary">Pending</span>
                             {% endif %}
                         </td>
                         <td>
                             {% if task.final_confidence %}
-                                {{ task.final_confidence|floatformat:2 }}
+                            {{ task.final_confidence|floatformat:2 }}
                             {% else %}
-                                -
+                            -
                             {% endif %}
                         </td>
                         <td>{{ task.processed_at|default:"-" }}</td>
@@ -62,10 +62,31 @@
                 </tbody>
             </table>
         </div>
-        {% else %}
-            <div class="text-center py-5">
-                <p class="lead text-muted">No classification results found.</p>
+
+        <!-- Pagination Controls -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+                {% if has_prev %}
+                <a href="?page={{ page|add:'-1' }}" class="btn btn-outline-secondary">&laquo; Previous</a>
+                {% else %}
+                <button class="btn btn-outline-secondary" disabled>&laquo; Previous</button>
+                {% endif %}
             </div>
+
+            <span class="text-muted">Page {{ page }}</span>
+
+            <div>
+                {% if has_next %}
+                <a href="?page={{ page|add:'1' }}" class="btn btn-outline-secondary">Next &raquo;</a>
+                {% else %}
+                <button class="btn btn-outline-secondary" disabled>Next &raquo;</button>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <p class="lead text-muted">No classification results found.</p>
+        </div>
         {% endif %}
     </div>
 </div>
