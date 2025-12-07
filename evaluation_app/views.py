@@ -66,6 +66,24 @@ class TaskListView(View):
             if page < 1: page = 1
         except ValueError:
             page = 1
+            
+        limit = 50
+        skip = (page - 1) * limit
+        
+        # Debug logging
+        val = request.session.get('evaluator_id')
+        print(f"DEBUG: evaluator_id from session: '{val}'")
+        print(f"DEBUG: Requesting {api_base}/classification-results?skip={skip}&limit={limit}&evaluator_id={val}")
+
+        try:
+            # Pass skip and limit to the API
+            resp = requests.get(f"{api_base}/classification-results", params={'skip': skip, 'limit': limit, 'evaluator_id': request.session['evaluator_id']}, timeout=120)
+            if resp.status_code == 200:
+                all_tasks = resp.json()
+                # Filter out completed tasks
+                tasks = [t for t in all_tasks if not t.get('is_complete')]
+            else:
+                messages.error(request, f"Failed to fetch tasks: {resp.text}")
         except requests.RequestException as e:
             messages.error(request, f"Error connecting to API: {e}")
         
