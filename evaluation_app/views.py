@@ -74,14 +74,16 @@ class TaskListView(View):
             # Pass skip and limit to the API
             resp = requests.get(f"{api_base}/classification-results", params={'skip': skip, 'limit': limit}, timeout=120)
             if resp.status_code == 200:
-                tasks = resp.json()
+                all_tasks = resp.json()
+                # Filter out completed tasks
+                tasks = [t for t in all_tasks if not t.get('is_complete')]
             else:
                 messages.error(request, f"Failed to fetch tasks: {resp.text}")
         except requests.RequestException as e:
             messages.error(request, f"Error connecting to API: {e}")
         
         # Simple pagination logic: if we got full limit, assume there's a next page
-        has_next = len(tasks) == limit
+        has_next = len(all_tasks) == limit if 'all_tasks' in locals() else False
         has_prev = page > 1
         
         context = {
@@ -142,7 +144,8 @@ class EvaluationInterfaceView(View):
             'origin': origin_data,
             'classification': classification_data,
             'categories': ICAO_CATEGORIES,
-            'uid': uid
+            'uid': uid,
+            'classification_result_id': full_data.get('id')
         }
         return render(request, 'evaluation_app/evaluation_interface.html', context)
 
