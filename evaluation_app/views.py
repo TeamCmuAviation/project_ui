@@ -227,47 +227,90 @@ class TaskListView(View):
 
     def get(self, request):
         api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
-        tasks = []
+        evaluator_id = request.session['evaluator_id']
         
-        # Pagination Parameters
+        # Initialize stats
+        total_tasks = 0
+        completed_tasks_count = 0
+        pending_tasks = []
+        progress_percentage = 0
+        
         try:
-            page = int(request.GET.get('page', 1))
-            if page < 1: page = 1
-        except ValueError:
-            page = 1
+            # Fetch ALL tasks for the evaluator to calculate progress
+            # Using a high limit to ensure we get everything
+            resp = requests.get(
+                f"{api_base}/classification-results", 
+                params={'skip': 0, 'limit': 5000, 'evaluator_id': evaluator_id}, 
+                timeout=120
+            )
             
-        limit = 50
-        skip = (page - 1) * limit
-        
-        # Debug logging
-        val = request.session.get('evaluator_id')
-        print(f"DEBUG: evaluator_id from session: '{val}'")
-        print(f"DEBUG: Requesting {api_base}/classification-results?skip={skip}&limit={limit}&evaluator_id={val}")
-
-        try:
-            # Pass skip and limit to the API
-            resp = requests.get(f"{api_base}/classification-results", params={'skip': skip, 'limit': limit, 'evaluator_id': request.session['evaluator_id']}, timeout=120)
             if resp.status_code == 200:
                 all_tasks = resp.json()
-                # Filter out completed tasks
-                tasks = [t for t in all_tasks if not t.get('is_complete')]
+                total_tasks = len(all_tasks)
+                
+                # Separation of concerns: Filter in Python
+                completed_tasks = [t for t in all_tasks if t.get('is_complete')]
+                pending_tasks = [t for t in all_tasks if not t.get('is_complete')]
+                
+                completed_tasks_count = len(completed_tasks)
+                
+                if total_tasks > 0:
+                    progress_percentage = int((completed_tasks_count / total_tasks) * 100)
             else:
                 messages.error(request, f"Failed to fetch tasks: {resp.text}")
+                
         except requests.RequestException as e:
             messages.error(request, f"Error connecting to API: {e}")
         
-        # Simple pagination logic: if we got full limit, assume there's a next page
-        has_next = len(all_tasks) >= limit if 'all_tasks' in locals() else False
-        has_prev = page > 1
-        
         context = {
-            'tasks': tasks,
-            'evaluator_id': request.session['evaluator_id'],
-            'page': page,
-            'has_next': has_next,
-            'has_prev': has_prev
+            'tasks': pending_tasks, # Only show pending tasks in the list
+            'evaluator_id': evaluator_id,
+            'total_tasks': total_tasks,
+            'completed_tasks_count': completed_tasks_count,
+            'progress_percentage': progress_percentage
         }
         return render(request, 'evaluation_app/task_list.html', context)
+
+@login_required
+def random_task(request):
+    """
+    Redirects to a random pending task for the current evaluator.
+    """
+    api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
+    evaluator_id = request.session.get('evaluator_id')
+    
+    if not evaluator_id:
+        return redirect('login')
+        
+    try:
+        # Fetch pending tasks
+        # We could potentially optimize this if the API supported filtering by status
+        resp = requests.get(
+            f"{api_base}/classification-results", 
+            params={'skip': 0, 'limit': 5000, 'evaluator_id': evaluator_id}, 
+            timeout=120
+        )
+        
+        if resp.status_code == 200:
+            all_tasks = resp.json()
+            pending_tasks = [t for t in all_tasks if not t.get('is_complete')]
+            
+            if pending_tasks:
+                import random
+                # Pick a random task
+                selected_task = random.choice(pending_tasks)
+                # Redirect to the evaluation interface for this task
+                return redirect('evaluate', uid=selected_task['source_uid'])
+            else:
+                messages.info(request, "🎉 You have completed all assigned tasks!")
+                return redirect('task_list')
+        else:
+            messages.error(request, "Failed to fetch tasks for random selection.")
+            return redirect('task_list')
+            
+    except requests.RequestException as e:
+        messages.error(request, f"Error connecting to API: {e}")
+        return redirect('task_list')
 
 
 class EvaluationInterfaceView(View):

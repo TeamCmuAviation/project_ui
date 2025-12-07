@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -216,8 +217,9 @@
 
     <header>
         <div class="header-left">
-            <div class="logo-placeholder">CMU</div>
-            <div class="app-title">Safe AIr Validator</div>
+            <img src="{% static 'evaluation_app/images/logo.svg' %}" alt="Safe AIr Logo"
+                style="height: 50px; margin-right: 15px;">
+            <div class="app-title">Safe AIr</div>
         </div>
         <div class="header-right">
             {% if request.session.evaluator_id %}
