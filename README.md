@@ -90,3 +90,33 @@ python manage.py migrate
     - `templates/`: HTML templates for the UI.
 - `human_eval_project/`: Project configuration settings.
 - `manage.py`: Django command-line utility.
+
+## Docker Deployment
+
+This project includes Docker support for easy deployment.
+
+### Prerequisites
+- Docker Desktop installed and running.
+
+### Running with Docker Compose
+
+1.  **Build and Run:**
+    ```bash
+    docker-compose up --build
+    ```
+    This command will build the Docker image and start the container on port `8000`.
+
+2.  **Access the Application:**
+    Navigate to [http://localhost:8000](http://localhost:8000) in your browser.
+
+3.  **Stopping the Container:**
+    Press `Ctrl+C` in the terminal or run:
+    ```bash
+    docker-compose down
+    ```
+
+### Environment Variables
+
+The `docker-compose.yml` file sets the following environment variables:
+- `DEBUG=1`: Enables Django debug mode.
+- `FASTAPI_BASE_URL=http://host.docker.internal:58510`: Points to the backend API running on the host machine. If your API is running elsewhere, update this value in `docker-compose.yml`.
