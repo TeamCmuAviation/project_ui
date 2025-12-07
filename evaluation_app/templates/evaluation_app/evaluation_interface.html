@@ -1,70 +1,350 @@
 {% extends 'evaluation_app/base.html' %}
 
-{% block content %}
-<div
-    style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 20px;">
-    <h2 style="margin: 0; color: var(--cmu-red);">Case #{{ origin.uid }}</h2>
-    <span style="font-weight: bold; color: var(--cmu-gray);">Evaluator: {{ request.session.evaluator_id }}</span>
-</div>
+{% block extra_css %}
+<style>
+    /* Layout: Fixed Header (from base) + Flex Body */
+    .evaluation-layout {
+        display: flex;
+        height: calc(100vh - 74px);
+        /* Subtract header height including border/shadow */
+        overflow: hidden;
+    }
 
-<!-- Origin Data Display (Blind) -->
-<div style="background-color: #f9f9f9; padding: 20px; border-left: 5px solid var(--cmu-black); margin-bottom: 30px;">
-    <h3 style="margin-top: 0;">Incident Narrative</h3>
-    <div
-        style="font-size: 1.1rem; line-height: 1.6; white-space: pre-wrap; background: white; padding: 15px; border: 1px solid #ddd;">
-        {{ origin.narrative }}</div>
+    /* Left Panel: Source Data (Dominant) */
+    .source-panel {
+        flex: 1;
+        overflow-y: auto;
+        padding: 40px;
+        background-color: #f8f9fa;
+    }
 
-    <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; font-size: 0.9rem;">
-        <div><strong>Date:</strong> {{ origin.date }}</div>
-        <div><strong>Phase:</strong> {{ origin.phase }}</div>
-        <div><strong>Aircraft:</strong> {{ origin.aircraft_type }}</div>
-        <div><strong>Location:</strong> {{ origin.location }}</div>
-        <div><strong>Operator:</strong> {{ origin.operator }}</div>
-    </div>
-</div>
+    .source-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 30px;
+        margin-bottom: 30px;
+        border-top: 5px solid var(--cmu-black);
+    }
 
-<!-- Evaluation Form -->
-<form method="post" action="{% url 'evaluate' uid %}">
-    {% csrf_token %}
-    <input type="hidden" name="classification_result_id" value="{{ classification_result_id }}">
+    .source-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
 
-    <div class="form-group">
-        <label for="id_category">ICAO Category Classification</label>
-        <select id="id_category" name="human_category" required style="width: 100%;">
-            <option value="">Search and select a category...</option>
-            {% for code, data in categories.items %}
-            <option value="{{ code }}">[{{ code }}] - {{ data.name }}: {{ data.description|truncatechars:80 }}</option>
+    .source-title {
+        font-size: 1.5rem;
+        color: var(--cmu-red);
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .metadata-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+        background: #fdfdfd;
+        padding: 15px;
+        border: 1px solid #eee;
+        border-radius: 4px;
+    }
+
+    .meta-item label {
+        color: #777;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .meta-item .value {
+        font-weight: 600;
+        color: var(--cmu-black);
+    }
+
+    .narrative-box {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        padding: 25px;
+        border-radius: 4px;
+        font-family: 'Georgia', serif;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #333;
+        white-space: pre-wrap;
+    }
+
+    /* Right Panel: Input Form (Fixed Sidebar) */
+    .input-panel {
+        width: 400px;
+        flex-shrink: 0;
+        background: white;
+        border-left: 1px solid #ddd;
+        display: flex;
+        flex-direction: column;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
+        z-index: 10;
+    }
+
+    .input-header {
+        padding: 20px;
+        background: var(--cmu-black);
+        color: white;
+    }
+
+    .input-header h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .input-content {
+        padding: 25px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .input-footer {
+        padding: 20px;
+        border-top: 1px solid #eee;
+        background: #f9f9f9;
+        text-align: right;
+    }
+
+    /* Confidence Controls */
+    .confidence-wrapper {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .conf-btn {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ccc;
+        background: #fff;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        text-align: center;
+    }
+
+    .conf-btn:hover {
+        background: #eee;
+    }
+
+    .conf-btn.active {
+        background: var(--cmu-red);
+        color: white;
+        border-color: var(--cmu-red);
+    }
+
+    /* Select2 Customization */
+    .select2-container--default .select2-selection--single {
+        height: 42px;
+        border: 1px solid #ccc;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 42px;
+        padding-left: 12px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 40px;
+    }
+
+    .category-option-code {
+        font-weight: bold;
+        color: var(--cmu-red);
+    }
+
+    .category-option-name {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .category-option-desc {
+        font-size: 0.85rem;
+        color: #666;
+        display: block;
+        margin-top: 2px;
+    }
+</style>
+{% endblock %}
+
+
+{% block layout_wrapper %}
+<div class="evaluation-layout">
+
+    <!-- Source Panel -->
+    <div class="source-panel">
+        <div class="container"
+            style="max-width: 1000px; padding: 0; box-shadow: none; border: none; background: transparent; display: block;">
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" style="margin-bottom: 20px;">
+                {{ message }}
+            </div>
             {% endfor %}
-        </select>
-        <small style="color: #666; display: block; margin-top: 5px;">Type to search by code, name, or
-            description.</small>
+            {% endif %}
+
+            <div class="source-card">
+                <div class="source-header">
+                    <div>
+                        <h2 class="source-title">Incident Source Data</h2>
+                        <div style="color: #666; font-size: 0.9rem; margin-top: 5px;">Blind Evaluation Mode - Case #{{
+                            uid }}</div>
+                    </div>
+                </div>
+
+                <div class="metadata-grid">
+                    <div class="meta-item">
+                        <label>Date</label>
+                        <div class="value">{{ origin.date|default:"N/A" }}</div>
+                    </div>
+                    <div class="meta-item">
+                        <label>Phase</label>
+                        <div class="value">{{ origin.phase|default:"N/A" }}</div>
+                    </div>
+                    <div class="meta-item">
+                        <label>Location</label>
+                        <div class="value">{{ origin.location|default:"N/A" }}</div>
+                    </div>
+                    <div class="meta-item">
+                        <label>Aircraft</label>
+                        <div class="value">{{ origin.aircraft_type|default:"N/A" }}</div>
+                    </div>
+                    <div class="meta-item">
+                        <label>Operator</label>
+                        <div class="value">{{ origin.operator|default:"N/A" }}</div>
+                    </div>
+                </div>
+
+                <h3
+                    style="font-size: 1.1rem; margin-bottom: 15px; color: var(--cmu-black); border-bottom: 2px solid var(--cmu-red); display: inline-block; padding-bottom: 5px;">
+                    Event Narrative</h3>
+                <div class="narrative-box">
+                    {% if origin.narrative %}
+                    {{ origin.narrative }}
+                    {% else %}
+                    <em style="color: #999;">No narrative provided for this case.</em>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="id_confidence">Confidence (0.00 - 1.00)</label>
-        <input type="number" id="id_confidence" name="human_confidence" min="0.00" max="1.00" step="0.01" required
-            placeholder="e.g. 0.95">
-    </div>
+    <!-- Input Panel -->
+    <div class="input-panel">
+        <div class="input-header">
+            <h2>Your Classification</h2>
+        </div>
 
-    <div class="form-group">
-        <label for="id_reasoning">Reasoning</label>
-        <textarea id="id_reasoning" name="human_reasoning" rows="4" required
-            placeholder="Explain why you chose this category based on the narrative..."></textarea>
-    </div>
+        <form method="post" action="{% url 'evaluate' uid %}" id="eval-form"
+            style="display: flex; flex-direction: column; height: 100%;">
+            {% csrf_token %}
+            <input type="hidden" name="classification_result_id" value="{{ classification_result_id }}">
 
-    <div style="text-align: right;">
-        <button type="submit" class="btn">Submit Evaluation</button>
-    </div>
-</form>
+            <div class="input-content">
+                <div class="form-group">
+                    <label for="id_category">ICAO Category <span style="color:var(--cmu-red)">*</span></label>
+                    <select id="id_category" name="human_category" required style="width: 100%;">
+                        <option value="">Select Category...</option>
+                        {% for code, data in categories.items %}
+                        <option value="{{ code }}" data-name="{{ data.name }}" data-desc="{{ data.description }}">
+                            {{ code }} - {{ data.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
+                <div class="form-group">
+                    <label for="id_confidence">Confidence Score <span style="color:var(--cmu-red)">*</span></label>
+                    <div class="confidence-wrapper">
+                        <div class="conf-btn" onclick="setConfidence(0.3)">Low</div>
+                        <div class="conf-btn" onclick="setConfidence(0.6)">Med</div>
+                        <div class="conf-btn" onclick="setConfidence(0.9)">High</div>
+                    </div>
+                    <input type="number" id="id_confidence" name="human_confidence" min="0.00" max="1.00" step="0.01"
+                        required style="width: 100%; font-family: monospace;" placeholder="0.00 - 1.00">
+                </div>
+
+                <div class="form-group">
+                    <label for="id_reasoning">Reasoning <span style="color:var(--cmu-red)">*</span></label>
+                    <div style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">Explain why this code applies...
+                    </div>
+                    <textarea id="id_reasoning" name="human_reasoning" rows="8" required
+                        style="width: 100%; resize: vertical;"
+                        placeholder="Key factors from the narrative..."></textarea>
+                </div>
+            </div>
+
+            <div class="input-footer">
+                <button type="submit" class="btn" style="width: 100%; padding: 12px;">Submit Evaluation</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+    function setConfidence(val) {
+        document.getElementById('id_confidence').value = val;
+        // Update active state of buttons
+        $('.conf-btn').removeClass('active');
+        // Simple logic to highlight: find button with approx value? 
+        // Or just let user click. We'll leave it as setting the input.
+        // For better UX, let's highlight based on proximity
+        if (val <= 0.4) $('.conf-btn:nth-child(1)').addClass('active');
+        else if (val <= 0.7) $('.conf-btn:nth-child(2)').addClass('active');
+        else $('.conf-btn:nth-child(3)').addClass('active');
+    }
+
+    // Bind input change to update buttons (reverse sync)
+    $('#id_confidence').on('input', function () {
+        var val = parseFloat($(this).val());
+        $('.conf-btn').removeClass('active');
+        if (!isNaN(val)) {
+            if (val <= 0.4) $('.conf-btn:nth-child(1)').addClass('active');
+            else if (val <= 0.7) $('.conf-btn:nth-child(2)').addClass('active');
+            else if (val >= 0.8) $('.conf-btn:nth-child(3)').addClass('active');
+        }
+    });
+
     $(document).ready(function () {
+        // Format Select2 options
+        function formatState(state) {
+            if (!state.id) {
+                return state.text;
+            }
+            var $state = $(
+                '<span>' +
+                '<div class="category-option-code">' + state.element.value + ' - ' + $(state.element).data('name') + '</div>' +
+                '<div class="category-option-desc">' + ($(state.element).data('desc') ? $(state.element).data('desc').substring(0, 100) + '...' : '') + '</div>' +
+                '</span>'
+            );
+            return $state;
+        }
+
         $('#id_category').select2({
-            placeholder: "Select a category",
-            allowClear: true
+            placeholder: "Search ICAO Category...",
+            allowClear: true,
+            templateResult: formatState,
+            // also format selection to be concise
+            templateSelection: function (state) {
+                if (!state.id) return state.text;
+                return state.id + ' - ' + $(state.element).data('name');
+            }
         });
     });
 </script>

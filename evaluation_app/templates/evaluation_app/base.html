@@ -4,62 +4,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CMU-Africa Classification Validator</title>
+    <title>Safe AIr</title>
     <!-- Simple Select2 CSS for searchable dropdowns if needed later -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         :root {
             --cmu-red: #C41230;
             --cmu-black: #000000;
-            --cmu-gray: #666666;
+            --cmu-gray: #E0E0E0;
+            /* Light gray for backgrounds */
+            --cmu-dark-gray: #333333;
             --cmu-white: #FFFFFF;
+            --border-radius: 4px;
         }
 
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            /* Modern font preference */
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            color: var(--cmu-black);
+            color: var(--cmu-dark-gray);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         /* CMU Red Header */
         header {
-            background-color: var(--cmu-red);
-            color: var(--cmu-white);
-            padding: 20px;
-            text-align: center;
-            border-bottom: 4px solid var(--cmu-black);
-            /* Tartan-ish pattern overlay influence */
-            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.1) 10px, rgba(0, 0, 0, 0.1) 20px);
+            background-color: var(--cmu-white);
+            color: var(--cmu-red);
+            padding: 0 20px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 4px solid var(--cmu-red);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+            z-index: 1000;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 1.8rem;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-placeholder {
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--cmu-red);
+            border: 2px solid var(--cmu-red);
+            padding: 5px 10px;
+            line-height: 1;
+        }
+
+        .app-title {
+            font-size: 1.25rem;
+            color: var(--cmu-black);
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
+        .header-right {
+            font-size: 0.9rem;
+            color: var(--cmu-black);
+            font-weight: 500;
+        }
+
+        /* Default Container (for login, list views) */
         .container {
             max-width: 900px;
             margin: 40px auto;
             background: var(--cmu-white);
             padding: 30px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-left: 10px solid var(--cmu-black);
-            border-right: 10px solid var(--cmu-black);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid var(--cmu-black);
+            border-radius: var(--border-radius);
         }
 
-        /* Geometric side accents */
-        .container::before {
-            content: "";
-            display: block;
-            height: 4px;
-            background: repeating-linear-gradient(90deg, var(--cmu-red), var(--cmu-red) 10px, var(--cmu-black) 10px, var(--cmu-black) 20px);
-            margin-bottom: 20px;
-        }
-
+        /* Button Styles */
         .btn {
             display: inline-block;
             background-color: var(--cmu-red);
@@ -68,32 +94,42 @@
             text-decoration: none;
             border: none;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: background-color 0.3s;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            border-radius: var(--border-radius);
         }
 
         .btn:hover {
             background-color: #900d23;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--cmu-dark-gray);
+        }
+
+        .btn-secondary:hover {
+            background-color: #000;
         }
 
         .alert {
             padding: 15px;
             margin-bottom: 20px;
-            border-left: 5px solid;
-            background-color: #eee;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
         }
 
         .alert-success {
-            border-color: #28a745;
             background-color: #d4edda;
             color: #155724;
+            border: 1px solid #c3e6cb;
         }
 
         .alert-error {
-            border-color: var(--cmu-red);
             background-color: #f8d7da;
             color: #721c24;
+            border: 1px solid #f5c6cb;
         }
 
         /* Form Styles */
@@ -103,9 +139,10 @@
 
         label {
             display: block;
-            font-weight: bold;
+            font-weight: 600;
             margin-bottom: 8px;
             color: var(--cmu-black);
+            font-size: 0.9rem;
         }
 
         input[type="text"],
@@ -113,11 +150,13 @@
         textarea,
         select {
             width: 100%;
-            padding: 10px;
-            border: 2px solid var(--cmu-gray);
-            border-radius: 4px;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
             box-sizing: border-box;
-            font-size: 1rem;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+            font-family: inherit;
         }
 
         input:focus,
@@ -125,6 +164,7 @@
         select:focus {
             border-color: var(--cmu-red);
             outline: none;
+            box-shadow: 0 0 0 3px rgba(196, 18, 48, 0.1);
         }
 
         /* Loading Overlay */
@@ -137,19 +177,18 @@
             background-color: rgba(255, 255, 255, 0.9);
             z-index: 9999;
             display: none;
-            /* Hidden by default */
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
 
         .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid var(--cmu-red);
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--cmu-red);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin {
@@ -163,10 +202,11 @@
         }
 
         .loading-text {
-            margin-top: 20px;
-            font-size: 1.2rem;
+            margin-top: 15px;
+            font-size: 1rem;
             color: var(--cmu-red);
-            font-weight: bold;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
     </style>
     {% block extra_css %}{% endblock %}
@@ -175,9 +215,18 @@
 <body>
 
     <header>
-        <h1>CMU-Africa Classification Validator</h1>
+        <div class="header-left">
+            <div class="logo-placeholder">CMU</div>
+            <div class="app-title">Safe AIr Validator</div>
+        </div>
+        <div class="header-right">
+            {% if request.session.evaluator_id %}
+            <span>Evaluator: <strong>{{ request.session.evaluator_id }}</strong></span>
+            {% endif %}
+        </div>
     </header>
 
+    {% block layout_wrapper %}
     <div class="container">
         {% if messages %}
         {% for message in messages %}
@@ -190,6 +239,7 @@
         {% block content %}
         {% endblock %}
     </div>
+    {% endblock %}
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
