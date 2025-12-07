@@ -66,24 +66,11 @@ class TaskListView(View):
             if page < 1: page = 1
         except ValueError:
             page = 1
-            
-        limit = 50
-        skip = (page - 1) * limit
-
-        try:
-            # Pass skip and limit to the API
-            resp = requests.get(f"{api_base}/classification-results", params={'skip': skip, 'limit': limit}, timeout=120)
-            if resp.status_code == 200:
-                all_tasks = resp.json()
-                # Filter out completed tasks
-                tasks = [t for t in all_tasks if not t.get('is_complete')]
-            else:
-                messages.error(request, f"Failed to fetch tasks: {resp.text}")
         except requests.RequestException as e:
             messages.error(request, f"Error connecting to API: {e}")
         
         # Simple pagination logic: if we got full limit, assume there's a next page
-        has_next = len(all_tasks) == limit if 'all_tasks' in locals() else False
+        has_next = len(all_tasks) >= limit if 'all_tasks' in locals() else False
         has_prev = page > 1
         
         context = {
@@ -158,7 +145,7 @@ class EvaluationInterfaceView(View):
         classification_result_id = request.POST.get('classification_result_id')
         
         payload = {
-            "classification_result_id": classification_result_id,
+            "classification_result_id": int(classification_result_id),
             "evaluator_id": evaluator_id,
             "human_category": request.POST.get('human_category'),
             "human_confidence": float(request.POST.get('human_confidence')),

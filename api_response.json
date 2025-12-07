@@ -1,0 +1,1602 @@
+[
+  {
+    "id": 12,
+    "source_uid": "asn_4caa46b4-8bd8-4b61-810a-aa32c9a6fe42",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Ground Handling",
+          "adrep_code": null,
+          "confidence": 61.8
+        }
+      ]
+    },
+    "llm1_category": "GRND",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The aircraft was damaged beyond repair due to being blown over in a gale. This event occurred while the aircraft was on the ground and relates to its handling and security on the ground, fitting the 'Ground Operations' category.",
+    "llm2_category": "GRND",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The aircraft was damaged beyond repair due to being blown over by a gale. This event occurred while the aircraft was on the ground and relates to its handling and security in adverse weather conditions, fitting the 'Ground Operations' category.",
+    "llm3_category": "GRND",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The aircraft was damaged beyond repair while on the ground due to a gale, which is a ground handling related event. While wind is a weather phenomenon, the primary impact described is the aircraft being blown over and damaged while stationary on the ground.",
+    "final_category": "GRND",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'GRND', overriding BERT",
+    "processing_time_ms": 2000,
+    "processed_at": "2025-11-27T00:15:25.284437",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 28,
+    "source_uid": "asn_990e7e37-c396-4845-a903-1ff8bb953427",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Birdstrike",
+          "adrep_code": null,
+          "confidence": 14.729999999999999
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes the loss of numerous aircraft during a military invasion, which is not directly covered by the provided ICAO ADREP categories. The event is a consequence of combat operations rather than a specific aviation system failure or operational hazard like a bird strike or runway excursion.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes a large-scale loss of aircraft due to military action during a conflict. None of the provided ICAO ADREP categories, such as bird strike, runway incursion, or equipment malfunction, accurately describe a situation where aircraft are lost as a direct result of enemy action during wartime.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes a large-scale loss of aircraft due to military action during a conflict, not a specific aviation safety event like a bird strike, runway incursion, or equipment malfunction. The context is wartime combat, which falls outside the scope of standard ICAO ADREP safety classifications.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 1980,
+    "processed_at": "2025-11-27T00:34:51.269380",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 312,
+    "source_uid": "asn_81cad387-1a86-4cf3-b247-ebfa131a1a27",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Failure or malfunction of an aircraft system or component - related to powerplant",
+          "adrep_code": null,
+          "confidence": 29.4
+        }
+      ]
+    },
+    "llm1_category": "RE",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report explicitly states a 'runway excursion' occurred when the aircraft failed to lift off and came to rest in trees after rolling out of the runway. While engine power loss was the cause, the primary event described is the aircraft leaving the runway.",
+    "llm2_category": "RE",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report clearly states a 'runway excursion' occurred when the aircraft failed to lift off and 'came to rest in trees' after rolling out of the runway. While engine power loss was the cause, the primary event described is the aircraft leaving the runway.",
+    "llm3_category": "RE",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report explicitly states a 'runway excursion' occurred when the aircraft failed to lift off and veered off the runway, subsequently colliding with trees. While engine power loss was the cause, the primary event described is the aircraft leaving the runway.",
+    "final_category": "RE",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'RE', overriding BERT",
+    "processing_time_ms": 2145,
+    "processed_at": "2025-11-27T02:12:37.151702",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 365,
+    "source_uid": "asn_b67eb653-df72-4498-9dd2-91b066f36d54",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Birdstrike",
+          "adrep_code": null,
+          "confidence": 27.150000000000002
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes an aircraft destroyed on the ground during a storm. There is no mention of a bird strike, runway incursion, equipment malfunction, or any other specific event that fits the defined categories. The primary cause appears to be the severe weather conditions.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes an aircraft destroyed on the ground due to a storm. There is no mention of a bird strike, runway incursion, equipment malfunction, or any other specific ICAO ADREP category. Therefore, 'Other' is the most appropriate classification.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes an aircraft destroyed on the ground due to a storm. There is no mention of a bird strike, runway incursion, turbulence encounter, equipment malfunction, ground handling, fuel issue, loss of control, midair collision, runway excursion, or controlled flight into terrain. Therefore, 'Other' is the most appropriate classification.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 2028,
+    "processed_at": "2025-11-27T08:09:33.719497",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 376,
+    "source_uid": "asn_b0325768-a395-4dde-8f03-bd8031c02fb6",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Runway incursion - vehicle, aircraft or person",
+          "adrep_code": null,
+          "confidence": 29.630000000000003
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report clearly describes an aircraft that, while under the control of the pilot, collided with terrain. The pilot's decision-making in poor weather and mountainous terrain led to the loss of situational awareness and subsequent impact.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report clearly describes an aircraft that, while under the control of the pilot, impacted terrain. The pilot's decision-making in poor weather and reduced visibility led to the collision with rising terrain.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report clearly describes an aircraft that, while under the pilot's control, collided with terrain. The pilot's decision-making in poor weather and mountainous terrain led to the uncontrolled descent into rising ground, resulting in a fatal impact.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 2591,
+    "processed_at": "2025-11-27T08:12:44.075557",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 419,
+    "source_uid": "asn_19858d26-cbb9-4d25-ae0d-e277485bd06d",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Runway incursion - vehicle, aircraft or person",
+          "adrep_code": null,
+          "confidence": 22.07
+        }
+      ]
+    },
+    "llm1_category": "GRND",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The incident describes a collision between two aircraft during pushback operations on the ground. The primary contributing factors involve the actions of ground personnel (tug driver, wing walkers) and the lack of situational awareness during a ground maneuver, which falls directly under the 'Ground Operations' category.",
+    "llm2_category": "GRND",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The incident involved a collision between two aircraft during pushback operations on the ground at an airport. The primary cause is attributed to the tug driver's actions and lack of situational awareness during ground handling, which directly falls under ground operations.",
+    "llm3_category": "GRND",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The incident involved a collision between two aircraft during pushback operations on the ground at an airport. The primary contributing factors relate to ground handling procedures, communication, and situational awareness of ground personnel, fitting the 'Ground Operations' category.",
+    "final_category": "GRND",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'GRND', overriding BERT",
+    "processing_time_ms": 2597,
+    "processed_at": "2025-11-27T08:25:04.619734",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 516,
+    "source_uid": "asn_323b1ee3-a1fd-4987-bf64-0716c8f1a98c",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Ground Collision",
+          "adrep_code": null,
+          "confidence": 16.619999999999997
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The aircraft, despite being under control, collided with terrain (trees) due to insufficient altitude during takeoff in foggy conditions. This directly aligns with the definition of Controlled Flight Into Terrain.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The aircraft, despite being under power, collided with terrain (trees) due to insufficient altitude during takeoff in fog. This directly aligns with the definition of Controlled Flight Into Terrain, where the flight crew is unaware of the impending collision.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The aircraft, despite being under pilot control, struck trees and terrain due to insufficient altitude during takeoff in foggy conditions. This directly aligns with the definition of Controlled Flight Into Terrain, where an airworthy aircraft, under control, collides with the ground or an obstacle.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 2034,
+    "processed_at": "2025-11-27T08:52:59.497619",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 538,
+    "source_uid": "asn_0f2f3df4-0fc1-42bb-981f-234641ccfd4d",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Ground Handling",
+          "adrep_code": null,
+          "confidence": 35.31
+        }
+      ]
+    },
+    "llm1_category": "LOC-I",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report explicitly states that 'control was lost' and the aircraft 'nose-dived from 2000 feet into the ground'. This directly aligns with the definition of Loss of Control - Inflight, where the aircraft is not being controlled by the pilot during flight.",
+    "llm2_category": "LOC-I",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report clearly states that 'control was lost' and the aircraft subsequently 'nose-dived from 2000 feet into the ground'. This directly aligns with the definition of Loss of Control - Inflight, where the aircraft is not being controlled by the pilot.",
+    "llm3_category": "LOC-I",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report explicitly states that 'control was lost' and the aircraft 'nose-dived from 2000 feet into the ground'. This directly aligns with the definition of Loss of Control - Inflight, which describes a loss of aircraft control while airborne.",
+    "final_category": "LOC-I",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'LOC-I', overriding BERT",
+    "processing_time_ms": 2385,
+    "processed_at": "2025-11-27T09:02:04.231767",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 624,
+    "source_uid": "asn_4813186d-48b0-4e9e-ad7b-f152b4ea8faa",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Unintended flight in IMC",
+          "adrep_code": null,
+          "confidence": 39.47
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes a controlled flight into terrain due to pilot disorientation and misjudgment of position, leading to a stall and subsequent crash. The pilot's actions, though intended to regain control, resulted in the aircraft impacting the ground.",
+    "llm2_category": "LOC-I",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report explicitly states that the pilot allowed the aircraft to lose flying speed and stall while executing a steep climbing turn. This directly indicates a loss of control in flight, leading to the subsequent crash.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes a situation where the pilot descended from clouds, became uncertain of position, lost flying speed, stalled, and subsequently crashed. This sequence of events, leading to a collision with the ground, aligns with the definition of Controlled Flight Into Terrain, even if the control was lost due to pilot error in adverse conditions.",
+    "final_category": "CFIT",
+    "final_confidence": "70.00",
+    "routing_decision": "review_recommended",
+    "consensus_rule": "Rule 6",
+    "rule_explanation": "RULE 6: Partial agreement - 2 LLMs agree on 'CFIT'",
+    "processing_time_ms": 2323,
+    "processed_at": "2025-11-27T09:26:36.579492",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 673,
+    "source_uid": "asn_24770105-2fb5-42e6-b41f-595baa260aab",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Ground Collision",
+          "adrep_code": null,
+          "confidence": 32.75
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The aircraft, after failing to maintain directional control during takeoff and departing the runway, subsequently struck terrain (houses) and burst into flames. This aligns with the definition of Controlled Flight Into Terrain, as the aircraft, despite being under some form of control, impacted the ground.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The aircraft, after an unsuccessful takeoff attempt, struck terrain (houses) and subsequently burst into flames. The investigation determined pilot error in maintaining directional control and poor judgment during the takeoff roll, leading to the controlled flight into terrain.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The aircraft departed the runway and subsequently collided with terrain (houses) after failing to maintain directional control during takeoff. While directional control issues are mentioned, the ultimate event is the controlled flight into terrain.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 2003,
+    "processed_at": "2025-11-28T08:03:29.918601",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 700,
+    "source_uid": "asn_7875bdb0-3882-474e-8004-a2cc21621120",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Inflight collision or near collision with terrain, water, or obstacle without indication of loss of control",
+          "adrep_code": null,
+          "confidence": 21.060000000000002
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes an aircraft crashing and burning after encountering dense fog. This indicates a collision with terrain or an obstacle while the aircraft was under control, fitting the definition of Controlled Flight Into Terrain.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report clearly states the aircraft 'crashed and burned' into terrain ('20 miles (32 km) north of San Luis, Argentina') while operating in adverse weather conditions ('dense fog'). This directly aligns with the definition of Controlled Flight Into Terrain.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes a crash into terrain (implied by the location '20 miles north of San Luis') in dense fog, which is a primary indicator of Controlled Flight Into Terrain. The aircraft impacted the ground due to environmental conditions rather than a loss of control or equipment failure.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 2120,
+    "processed_at": "2025-11-28T08:11:13.580958",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 712,
+    "source_uid": "asn_9cf3e5d6-c5e3-4a44-93d1-dc62074bfd25",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Unintended flight in IMC",
+          "adrep_code": null,
+          "confidence": 34.52
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "90.00",
+    "llm1_reasoning": "The report explicitly states the aircraft 'Crashed in bad weather'. This directly aligns with the definition of Controlled Flight Into Terrain, which involves a flight into the ground or an obstacle, often exacerbated by adverse weather conditions.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "90.00",
+    "llm2_reasoning": "The report explicitly states the aircraft 'Crashed in bad weather'. This strongly indicates a Controlled Flight Into Terrain (CFIT) event, where the aircraft, despite being under control, collided with the ground or an obstacle, likely due to poor visibility or other adverse weather conditions.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "90.00",
+    "llm3_reasoning": "The report explicitly states the aircraft 'Crashed in bad weather'. This directly aligns with the definition of Controlled Flight Into Terrain, where an airworthy aircraft, under control, is flown into the ground or an obstacle, often influenced by adverse weather conditions.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 2229,
+    "processed_at": "2025-11-28T08:14:38.117863",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 739,
+    "source_uid": "asn_05706a8b-2b83-47a0-91c9-2e857a3843f3",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Inflight collision or near collision with terrain, water, or obstacle without indication of loss of control",
+          "adrep_code": null,
+          "confidence": 53.5
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes a floatplane crashing into Guanabara Bay during takeoff. This event, a collision with terrain (water in this case) while under the control of the pilot, aligns directly with the definition of Controlled Flight Into Terrain.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes a floatplane crashing into Guanabara Bay during takeoff. This event directly aligns with the definition of Controlled Flight Into Terrain, as the aircraft collided with water (an obstacle) while under the control of the pilot. Reduced visibility is a contributing factor but does not change the fundamental nature of the event.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report states the aircraft 'crashed into Guanabara Bay during takeoff'. This directly aligns with the definition of Controlled Flight Into Terrain, as it involves a flight path leading to impact with terrain (in this case, water) despite the aircraft being under some form of control.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 1695,
+    "processed_at": "2025-11-28T08:22:20.644632",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 774,
+    "source_uid": "asn_304b51ec-ecab-4edc-9e89-35223e6d4228",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Ground Handling",
+          "adrep_code": null,
+          "confidence": 41.58
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes a crash after collision with a 'wooden measurement tower', which constitutes an uncontrolled impact with an obstacle on the ground. While a faulty altimeter is mentioned, the primary event leading to the crash was the collision with terrain/obstacle.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The aircraft crashed after colliding with a wooden measurement tower. This indicates a controlled flight into terrain or an obstacle, which is the primary event described. While a faulty altimeter is mentioned, it is a contributing factor, not the primary event itself.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes a crash into a wooden measurement tower, which is a type of terrain or obstacle. The event clearly aligns with the definition of Controlled Flight Into Terrain, even though a faulty altimeter was also mentioned as a contributing factor.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 2166,
+    "processed_at": "2025-11-28T08:32:26.425768",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 856,
+    "source_uid": "asn_0971e006-fa59-40cf-882f-dee01e2993d2",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Ground Handling",
+          "adrep_code": null,
+          "confidence": 39.62
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes damage to an aircraft during a military invasion, which is an event outside the scope of standard aviation safety occurrences covered by the ICAO ADREP taxonomy. It does not fit any of the defined categories like bird strike, runway incursion, or equipment malfunction.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes damage to an aircraft during a military invasion, which is an event outside the scope of typical aviation safety occurrences covered by the provided ICAO ADREP taxonomy. It does not fit any of the specific categories like bird strike, runway incursion, or equipment malfunction.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes damage to an aircraft due to military action during an invasion, which does not align with any of the specific ICAO ADREP safety event categories. This event is best classified as 'Other'.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 2088,
+    "processed_at": "2025-11-28T08:55:48.491648",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 907,
+    "source_uid": "asrs_0073faf0-76bf-4ee4-96ea-d243146c9be7",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASRS",
+          "category": "Windshear or thunderstorm.",
+          "adrep_code": "WSTRW",
+          "confidence": 79.61
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The primary safety event described is a significant discrepancy in altimeter settings between ATC and ATIS, leading to a potentially unsafe approach. While an EGPWS caution alert for an obstacle was triggered, it was a consequence of the incorrect altimeter setting and not a primary event like a loss of control or controlled flight into terrain. The core issue is a breakdown in communication and procedural adherence regarding altimeter settings.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The primary safety event described is a miscommunication and procedural oversight regarding altimeter settings during an instrument approach, leading to a potentially unsafe situation. While an EGPWS caution alert was triggered, it was a consequence of the incorrect altimeter setting, not a primary equipment malfunction or terrain event. The core issue is not a direct fit for any of the other specific ICAO ADREP categories.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The primary safety event described is a miscommunication and deviation from the intended flight path due to an incorrect altimeter setting, leading to a potentially hazardous situation during approach. While it resulted in an EGPWS caution, the core issue is not a system failure, turbulence, or ground event, but rather an operational and procedural lapse.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 2726,
+    "processed_at": "2025-11-28T09:06:22.236401",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 921,
+    "source_uid": "asrs_1bb25cdc-1dfe-4797-9719-f6c02a86d648",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASRS",
+          "category": "Unknown",
+          "adrep_code": "INCIDENT",
+          "confidence": 80.34
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "90.00",
+    "llm1_reasoning": "The report describes an aircraft descending below the Minimum Vectoring Altitude (MVA) and the altitude required for the approach, triggering a low altitude alert. While there was no loss of control or collision, the event involved a deviation from expected flight path and altitude parameters that doesn't fit neatly into the other specific ICAO ADREP categories.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "90.00",
+    "llm2_reasoning": "The report describes an aircraft descending below the Minimum Vectoring Altitude (MVA) and the minimum altitude for being established on the approach. While a low altitude alert was issued and the crew stated they were established, the primary safety concern is the deviation from prescribed altitudes and procedures, which doesn't neatly fit into the other specific ICAO ADREP categories. It is a procedural or operational deviation rather than a distinct event like a bird strike or runway excursion.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "90.00",
+    "llm3_reasoning": "The report describes an occurrence where the aircraft descended below the Minimum Vectoring Altitude (MVA) and altitude restrictions for the approach. While there was a low altitude alert and the crew stated they were established, the initial rapid descent below mandated altitudes without a clear malfunction or external factor points to a deviation from safe operational parameters not covered by other specific categories.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 2653,
+    "processed_at": "2025-11-28T09:09:06.708906",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1015,
+    "source_uid": "asn_ca852432-559d-40aa-99e8-e2f54710e7c7",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Ground Handling",
+          "adrep_code": null,
+          "confidence": 50.529999999999994
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes damage to an aircraft during a military attack, which does not fit any of the specific ICAO ADREP categories. The event is external to normal aviation operations and safety concerns.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes an aircraft being damaged beyond repair during a military attack, which does not fit any of the specific ICAO ADREP categories. The event is not a bird strike, runway incursion, turbulence, equipment malfunction, ground handling, fuel issue, loss of control, midair collision, runway excursion, or controlled flight into terrain.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes damage to an aircraft beyond repair during a German attack. This event is not a standard operational occurrence like a bird strike, runway incursion, or equipment malfunction, but rather an act of war.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 1933,
+    "processed_at": "2025-11-29T08:06:02.011344",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1031,
+    "source_uid": "asn_1a557a43-70dd-405d-8f0b-7a59a0838849",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Powerplant issues due to fuel exhaustion, starvation, contamination or wrong fuel",
+          "adrep_code": null,
+          "confidence": 15.079999999999998
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes an aircraft being shot down and captured during military use, with prior damage to its engine and abandonment on an airport. This event does not fit any of the specific ICAO ADREP categories provided, such as bird strike, runway incursion, equipment malfunction, or loss of control. The primary event is a military action leading to the aircraft's destruction and capture.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes a historical event involving an aircraft being shot down and captured during wartime. This does not align with any of the specific ICAO ADREP safety event categories provided. The BERT prediction of 'Powerplant issues' is not supported by the narrative, which focuses on military action and abandonment.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes an aircraft that was abandoned with a damaged engine, captured by enemy forces, and subsequently shot down. This event does not fit any of the specific ICAO ADREP categories provided, such as bird strike, runway incursion, or equipment malfunction, as the primary cause is related to military conflict and abandonment.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 1779,
+    "processed_at": "2025-11-29T08:10:35.433607",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1088,
+    "source_uid": "asn_5cbf797e-3e7d-49d3-97e8-ae911f17a523",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Ground Handling",
+          "adrep_code": null,
+          "confidence": 29.609999999999996
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report explicitly states the aircraft 'Crashed in bad weather.' This directly aligns with the definition of Controlled Flight Into Terrain, where an aircraft under control collides with the ground or an obstacle, often exacerbated by environmental conditions like bad weather.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report explicitly states 'Crashed in bad weather,' which directly aligns with the definition of Controlled Flight Into Terrain (CFIT) \u2013 an accident where an airworthy aircraft, under the control of the flight crew, is unintentionally flown into the ground, a mountain, water, or other obstacle. The mention of 'bad weather' is a common contributing factor to CFIT events.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report explicitly states the aircraft 'Crashed in bad weather.' This directly aligns with the definition of Controlled Flight Into Terrain, where an aircraft under control collides with the ground or an obstacle, often exacerbated by environmental conditions like bad weather.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 1959,
+    "processed_at": "2025-11-29T08:26:47.953401",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1093,
+    "source_uid": "asn_83285abf-1b45-404b-9974-88c33d1c97f1",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Loss of control - inflight",
+          "adrep_code": null,
+          "confidence": 23.64
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "90.00",
+    "llm1_reasoning": "The report states the aircraft crashed as a result of pilot failure in adverse weather conditions, leading to a loss of life. This directly aligns with the definition of Controlled Flight Into Terrain, where the aircraft collides with the ground or an obstacle, often influenced by pilot error or environmental factors.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "90.00",
+    "llm2_reasoning": "The report states the aircraft crashed as a result of pilot failure in adverse weather conditions, leading to a fatality. This directly aligns with the definition of Controlled Flight Into Terrain, where the aircraft collides with the ground or an obstacle, even if control was maintained until impact.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report explicitly states the aircraft 'crashed as a result of pilot failure in adverse weather conditions,' leading to a fatal outcome. This directly aligns with the definition of Controlled Flight Into Terrain, where the flight crew's actions or inactions, potentially exacerbated by weather, result in the aircraft impacting the ground.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 1760,
+    "processed_at": "2025-11-29T08:28:12.686700",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1102,
+    "source_uid": "asn_e9acfabe-d9ea-4bff-b64d-02e4be3cf173",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Ground Collision",
+          "adrep_code": null,
+          "confidence": 20.880000000000003
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report states the aircraft 'Crashed' with fatalities and injuries. This is a severe event that doesn't specifically fit any of the more granular ICAO ADREP categories like bird strike, runway incursion, turbulence, equipment malfunction, ground operations, fuel, loss of control, midair collision, runway excursion, or controlled flight into terrain. Therefore, 'Other' is the most appropriate classification for a general crash with no further details.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report states the aircraft 'Crashed' and resulted in fatalities and injuries. This is a severe event that doesn't specifically fit the definitions of the other provided ICAO ADREP categories. While a 'Ground Collision' was predicted, the report lacks the detail to confirm this specific type of event.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report states 'Crashed' with fatalities and injuries, indicating a severe accident. However, it lacks specific details about the cause (e.g., terrain, equipment, runway excursion, midair collision, bird strike, or ground operation). Therefore, 'Other' is the most appropriate classification until more information is available.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 2160,
+    "processed_at": "2025-11-29T08:30:45.957814",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1127,
+    "source_uid": "asn_70e42ffc-be53-466f-959f-28a818455112",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Inflight collision or near collision with terrain, water, or obstacle without indication of loss of control",
+          "adrep_code": null,
+          "confidence": 17.419999999999998
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes an aircraft crashing and burning as a result of enemy anti-aircraft artillery fire. This directly aligns with the definition of Controlled Flight Into Terrain, where the aircraft impacts the ground or an obstacle, even if initiated by external hostile action.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes an aircraft coming under fire from enemy anti-aircraft artillery, leading to a crash and burn. This directly aligns with the definition of 'Controlled Flight Into Terrain' as a flight into ground/obstacle due to external hostile action.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes an aircraft coming under fire from enemy anti-aircraft artillery, resulting in a crash and burn. This directly aligns with the definition of Controlled Flight Into Terrain, where the aircraft encounters the ground or an obstacle.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 2006,
+    "processed_at": "2025-11-29T08:37:52.719349",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1144,
+    "source_uid": "asn_6efabdd1-cc4f-48b5-b20a-fce0839bfa6a",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Powerplant issues due to fuel exhaustion, starvation, contamination or wrong fuel",
+          "adrep_code": null,
+          "confidence": 85.61
+        }
+      ]
+    },
+    "llm1_category": "FUEL",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report explicitly states that both engines failed on takeoff due to the flight engineer selecting an 'almost empty fuel tank'. This directly points to an issue with the fuel system and its management, fitting the FUEL category.",
+    "llm2_category": "FUEL",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report explicitly states that both engines failed on takeoff due to the flight engineer selecting an almost empty fuel tank. This directly indicates a problem with the fuel system management and availability, which is the core of the FUEL category.",
+    "llm3_category": "FUEL",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report explicitly states that both engines failed on takeoff due to the selection of an almost empty fuel tank. This directly points to an issue with fuel management and availability, which falls under the 'Fuel Related' category.",
+    "final_category": "FUEL",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'FUEL', overriding BERT",
+    "processing_time_ms": 2002,
+    "processed_at": "2025-11-29T08:42:43.108547",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1162,
+    "source_uid": "asn_b7d1651d-5d47-45f5-978a-6a62fc7f999a",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Inflight collision or near collision with terrain, water, or obstacle without indication of loss of control",
+          "adrep_code": null,
+          "confidence": 26.32
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report clearly states the aircraft was attacked by enemy fighters and subsequently crashed near the airfield. This indicates a loss of control or deliberate action leading to impact with terrain, fitting the definition of Controlled Flight Into Terrain.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes an aircraft being attacked by enemy fighters and subsequently crashing near the airfield. This indicates a loss of control due to external factors leading to a collision with terrain, which aligns with the definition of Controlled Flight Into Terrain.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes an aircraft being attacked by enemy fighters, leading to a crash. This event does not fit any of the specific ICAO ADREP categories provided, such as bird strike, runway incursion, or equipment malfunction. Therefore, 'Other' is the most appropriate classification.",
+    "final_category": "CFIT",
+    "final_confidence": "70.00",
+    "routing_decision": "review_recommended",
+    "consensus_rule": "Rule 6",
+    "rule_explanation": "RULE 6: Partial agreement - 2 LLMs agree on 'CFIT'",
+    "processing_time_ms": 1967,
+    "processed_at": "2025-11-29T08:47:50.888810",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1202,
+    "source_uid": "asrs_4659cc96-9a36-4f27-aa9c-a425d0d4350f",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASRS",
+          "category": "Ground Handling",
+          "adrep_code": "RAMP",
+          "confidence": 78.84
+        }
+      ]
+    },
+    "llm1_category": "LOC-I",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes a situation where the pilots struggled to control the aircraft's pitch, experiencing a significant nose-up tendency that required considerable physical effort and the use of emergency trim to overcome. This directly indicates a loss of normal control in flight.",
+    "llm2_category": "LOC-I",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes a situation where the pilots struggled to control the aircraft's pitch, experiencing a significant nose-up tendency that required substantial physical effort and the use of emergency trim to overcome. This indicates a loss of normal control during flight.",
+    "llm3_category": "LOC-I",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes a situation where the pilots lost pitch control of the aircraft, experiencing a significant nose-up attitude that they struggled to correct with physical force and trim. This directly aligns with the definition of Loss of Control - Inflight, as they were unable to maintain the intended flight path.",
+    "final_category": "LOC-I",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'LOC-I', overriding BERT",
+    "processing_time_ms": 1994,
+    "processed_at": "2025-11-29T08:59:15.454351",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1212,
+    "source_uid": "asn_7dc39e57-6048-4afa-98aa-8d0bbaf58d0b",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Unintended flight in IMC",
+          "adrep_code": null,
+          "confidence": 33.550000000000004
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes a collision with an iceberg during taxiing. This event does not fit any of the specific ICAO ADREP categories provided, such as bird strike, runway incursion, or equipment malfunction. Therefore, 'Other' is the most appropriate classification.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes a collision with an iceberg during taxiing, which is an unusual event not specifically covered by the provided ICAO ADREP categories. While it occurred on the ground, it's not a standard ground handling issue like a collision with another ground vehicle or equipment. Therefore, 'OTHER' is the most appropriate classification.",
+    "llm3_category": "GRND",
+    "llm3_confidence": "90.00",
+    "llm3_reasoning": "The report explicitly states the incident occurred 'during taxiing,' which is a ground operation. The object encountered, an iceberg, is an external hazard during this phase of flight. This aligns with the definition of Ground Operations events.",
+    "final_category": "OTHER",
+    "final_confidence": "70.00",
+    "routing_decision": "review_recommended",
+    "consensus_rule": "Rule 6",
+    "rule_explanation": "RULE 6: Partial agreement - 2 LLMs agree on 'OTHER'",
+    "processing_time_ms": 2310,
+    "processed_at": "2025-11-29T09:01:05.346058",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1227,
+    "source_uid": "asn_3f62b760-4ffb-4050-8155-50cb903412a0",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Other",
+          "adrep_code": null,
+          "confidence": 40.63
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes a crash with missing and rescued occupants, indicating a significant event. However, it lacks specific details about the cause, such as a bird strike, runway incursion, equipment malfunction, or loss of control. Therefore, 'Other' is the most appropriate classification given the limited information.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes a crash with occupants missing and rescued, but provides no specific details about the cause or nature of the event. Therefore, it does not fit any of the defined categories and is best classified as 'Other'.",
+    "llm3_category": null,
+    "llm3_confidence": null,
+    "llm3_reasoning": null,
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 2 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 1721,
+    "processed_at": "2025-11-29T09:04:03.103233",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1269,
+    "source_uid": "asn_4fb77a8c-965d-4350-b771-73f5b71ec9f0",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Unintended flight in IMC",
+          "adrep_code": null,
+          "confidence": 36.03
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "90.00",
+    "llm1_reasoning": "The report states a 'force landed' due to 'bad weather' and 'never recovered'. This strongly suggests an uncontrolled descent into terrain, even if the pilot was attempting to manage the situation. The 'bad weather' likely contributed to the loss of control leading to the ground impact.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes a forced landing due to bad weather, which resulted in the aircraft not being recovered. This event does not directly fit any of the specific ICAO ADREP categories like bird strike, runway incursion, turbulence, equipment malfunction, or loss of control. 'Other' is the most appropriate classification for an event of this nature.",
+    "llm3_category": null,
+    "llm3_confidence": null,
+    "llm3_reasoning": null,
+    "final_category": "CFIT",
+    "final_confidence": "50.00",
+    "routing_decision": "human_review_required",
+    "consensus_rule": "Rule 7",
+    "rule_explanation": "RULE 7: No consensus - high disagreement. Votes: {'Unintended flight in IMC': 1, 'CFIT': 1, 'OTHER': 1}",
+    "processing_time_ms": 1766,
+    "processed_at": "2025-11-29T09:11:03.377390",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1325,
+    "source_uid": "asrs_726cca21-3ffc-4458-a4c2-a7c459948d59",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASRS",
+          "category": "Abrupt maneuvre",
+          "adrep_code": "AMAN",
+          "confidence": 84.69
+        }
+      ]
+    },
+    "llm1_category": "RE",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The aircraft experienced a loss of directional control on the runway during landing rollout, leading to the use of the overrun to come to a stop. This directly aligns with the definition of a runway excursion, where the aircraft veers off the runway.",
+    "llm2_category": "RE",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The aircraft experienced a loss of directional control on the runway during braking, leading to the use of the overrun to stop. While the aircraft did not depart the paved surface entirely, the event describes an uncontrolled deviation from the runway centerline and subsequent use of the overrun area, aligning with the definition of a runway excursion.",
+    "llm3_category": "RE",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes the aircraft sliding sideways on the runway and using the overrun area to stop, which directly aligns with the definition of a runway excursion. The pilot's loss of control over braking and directional control on the slick surface led to the aircraft deviating from the paved runway.",
+    "final_category": "RE",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'RE', overriding BERT",
+    "processing_time_ms": 2419,
+    "processed_at": "2025-11-29T09:25:34.920186",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1339,
+    "source_uid": "asn_426a3ec2-6800-4809-81d0-96e514de6123",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Ground Collision",
+          "adrep_code": null,
+          "confidence": 24.169999999999998
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report clearly describes a collision with a tree-top followed by a crash into a forest. This directly aligns with the definition of Controlled Flight Into Terrain, where the aircraft collides with the ground or an obstacle while under control.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report clearly describes a collision with terrain (tree-top) leading to a crash into a forest. This aligns directly with the definition of Controlled Flight Into Terrain, where the aircraft, while under control, impacts the ground or an obstacle.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report clearly describes a collision with a tree-top and subsequent crash into a forest, which directly aligns with the definition of Controlled Flight Into Terrain (CFIT). The event occurred while the aircraft was in flight and resulted in impact with the ground/terrain.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 1981,
+    "processed_at": "2025-11-30T08:02:54.643428",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1371,
+    "source_uid": "asn_8ce3b5d5-7d85-4839-be6f-23579a48e596",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Runway incursion - vehicle, aircraft or person",
+          "adrep_code": null,
+          "confidence": 40.1
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The aircraft, while on approach to land, struck a building near the shore due to a combination of factors including late arrival and insufficient fuel. This resulted in a crash shortly after, which is a controlled flight into terrain event.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The aircraft, while on approach, struck a building near the shore and subsequently crashed. This indicates a controlled flight into terrain/obstacle, as the aircraft was under the pilot's control but impacted the ground/obstacle.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The aircraft, while on approach for landing, struck a building near the shore due to low visibility or an unstable approach, leading to a crash. This directly aligns with the definition of Controlled Flight Into Terrain.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 2133,
+    "processed_at": "2025-11-30T08:12:02.483176",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1430,
+    "source_uid": "asn_d34272d8-fa90-4c65-81c2-fb759ba58bd2",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Unintended flight in IMC",
+          "adrep_code": null,
+          "confidence": 27.900000000000002
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report clearly describes an aircraft impacting a mountainside during approach in poor weather conditions. This directly aligns with the definition of Controlled Flight Into Terrain, where the aircraft, despite being under control, collides with the ground or an obstacle.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes an aircraft impacting a mountainside during approach in poor weather conditions. This directly aligns with the definition of Controlled Flight Into Terrain, where an airworthy aircraft, under control, is unintentionally flown into the ground or an obstacle.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes the aircraft impacting a mountainside during an approach in poor weather conditions. This clearly aligns with the definition of Controlled Flight Into Terrain, where the flight crew, despite having control of the aircraft, inadvertently flies into the ground or an obstacle.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 1690,
+    "processed_at": "2025-11-30T08:28:54.189867",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1454,
+    "source_uid": "asn_95b1a807-c788-413f-bdc7-03cad3ed865b",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Failure or malfunction of an aircraft system or component - related to powerplant",
+          "adrep_code": null,
+          "confidence": 61.91
+        }
+      ]
+    },
+    "llm1_category": "EQUIP",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes multiple engine issues, including high cylinder head temperatures leading to an initial landing and subsequent engine stoppage during final approach. This directly points to a failure or malfunction of aircraft systems, specifically the powerplant.",
+    "llm2_category": "EQUIP",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes multiple engine issues, including high cylinder head temperatures leading to an initial landing and subsequent engine stoppage during the final approach. This clearly indicates a failure or malfunction of aircraft systems, specifically the powerplant.",
+    "llm3_category": "EQUIP",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes multiple engine issues, including high cylinder head temperatures leading to an initial landing and later, both engines stopping in flight. This directly points to a failure or malfunction of aircraft systems, specifically the powerplant.",
+    "final_category": "EQUIP",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'EQUIP', overriding BERT",
+    "processing_time_ms": 2002,
+    "processed_at": "2025-11-30T08:35:44.723297",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1529,
+    "source_uid": "asrs_8ea8f339-160c-452d-8b36-2bac0e63b3bc",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASRS",
+          "category": "Failure or malfunction of an aircraft system or component - other than powerplant",
+          "adrep_code": "SCF-NP",
+          "confidence": 79.25999999999999
+        }
+      ]
+    },
+    "llm1_category": "EQUIP",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report details multiple EICAS messages indicating failures or malfunctions of aircraft systems, specifically the bleed air system and the anti-ice wing system. These events directly correspond to the definition of equipment malfunction.",
+    "llm2_category": "EQUIP",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report details multiple system failures and malfunctions during flight, including Bleed 2 failure and A-I Wing Fail EICAS, which directly impacted the aircraft's systems and the crew's decision-making process. These events are consistent with equipment malfunctions.",
+    "llm3_category": "EQUIP",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report details multiple system failures during flight, including the failure of Bleed 2 and the A-I Wing Fail EICAS message. These are direct indications of equipment malfunctions, which are the primary safety events described.",
+    "final_category": "EQUIP",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'EQUIP', overriding BERT",
+    "processing_time_ms": 2004,
+    "processed_at": "2025-11-30T08:57:12.897111",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1574,
+    "source_uid": "asn_640c6d4a-94bc-423b-8ef8-6f69f693dd00",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Abnormal runway contact",
+          "adrep_code": null,
+          "confidence": 51.12
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes the aircraft striking the ground during a low-altitude turn due to poor visibility, leading to a crash. This directly aligns with the definition of Controlled Flight Into Terrain, where the aircraft, under some degree of control, impacts the ground or an obstacle.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes the aircraft striking the ground during a low-altitude turn, leading to a cartwheel and fire. This directly aligns with the definition of Controlled Flight Into Terrain, where the aircraft, under control (albeit with lost visual contact), impacts the ground or an obstacle.",
+    "llm3_category": null,
+    "llm3_confidence": null,
+    "llm3_reasoning": null,
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 2 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 2048,
+    "processed_at": "2025-11-30T09:06:03.833656",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1596,
+    "source_uid": "asn_3555901a-7942-4890-82a6-2d601520eac1",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Powerplant issues due to fuel exhaustion, starvation, contamination or wrong fuel",
+          "adrep_code": null,
+          "confidence": 13.170000000000002
+        }
+      ]
+    },
+    "llm1_category": "EQUIP",
+    "llm1_confidence": "90.00",
+    "llm1_reasoning": "The report explicitly states that 'both engines... failed'. This directly indicates a failure of the aircraft's propulsion system, which falls under equipment malfunction. While the BERT prediction suggests fuel issues, the core event described is engine failure, which is a broader equipment malfunction.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "90.00",
+    "llm2_reasoning": "The report describes a dual engine failure at altitude leading to a forced landing. While the BERT prediction suggests 'Powerplant issues due to fuel exhaustion, starvation, contamination or wrong fuel', the provided report does not explicitly state the cause of the engine failure. Therefore, 'Other' is the most appropriate classification as the specific cause is not detailed enough to fit into a more specific ICAO ADREP category.",
+    "llm3_category": null,
+    "llm3_confidence": null,
+    "llm3_reasoning": null,
+    "final_category": "EQUIP",
+    "final_confidence": "50.00",
+    "routing_decision": "human_review_required",
+    "consensus_rule": "Rule 7",
+    "rule_explanation": "RULE 7: No consensus - high disagreement. Votes: {'Powerplant issues due to fuel exhaustion, starvation, contamination or wrong fuel': 1, 'EQUIP': 1, 'OTHER': 1}",
+    "processing_time_ms": 2112,
+    "processed_at": "2025-11-30T09:10:04.058920",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1606,
+    "source_uid": "asn_be6ca3d2-aec4-4dfb-8ef9-5a6c2a60b7b4",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Failure or malfunction of an aircraft system or component - related to powerplant",
+          "adrep_code": null,
+          "confidence": 23.380000000000003
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes a discrepancy in aircraft serial numbers and types, not a specific aviation safety event like a collision, loss of control, or equipment failure. The core issue is an administrative or historical record error, which does not fit into any of the defined ICAO ADREP safety event categories.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes a discrepancy in aircraft serial numbers and types, not a specific aviation safety event such as a collision, loss of control, or equipment malfunction. The narrative focuses on identification errors rather than an incident that occurred during flight or ground operations.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes a discrepancy in aircraft serial numbers and types within a historical military context. It does not describe an actual aviation safety event such as a collision, loss of control, or equipment failure. Therefore, it falls under the 'Other' category as it doesn't fit any of the specific event definitions.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 1647,
+    "processed_at": "2025-11-30T09:11:37.670828",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1607,
+    "source_uid": "asrs_bba7d534-7fc4-4f99-bb67-3b1beb97d44f",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASRS",
+          "category": "Ground Handling",
+          "adrep_code": "RAMP",
+          "confidence": 85.54
+        }
+      ]
+    },
+    "llm1_category": "GRND",
+    "llm1_confidence": "90.00",
+    "llm1_reasoning": "The report describes an issue with incorrect Dangerous Goods Regulations (DGR) documentation and handling prior to the Loading Instruction Report (LIR). This directly relates to the processes and procedures involved in ground handling operations for cargo, specifically concerning the correct classification and documentation of dangerous goods.",
+    "llm2_category": "GRND",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes an issue with Dangerous Goods Regulations (DGR) documentation and incorrect cargo details being processed before the Loading Instruction Report (LIR). This directly relates to the handling and documentation of cargo on the ground, which falls under ground operations.",
+    "llm3_category": null,
+    "llm3_confidence": null,
+    "llm3_reasoning": null,
+    "final_category": "GRND",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 2 LLMs unanimous on 'GRND', overriding BERT",
+    "processing_time_ms": 2070,
+    "processed_at": "2025-11-30T09:12:04.130886",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1611,
+    "source_uid": "asrs_808f99d8-f92b-44ba-aa0e-009c068d47ed",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASRS",
+          "category": "Unknown",
+          "adrep_code": "INCIDENT",
+          "confidence": 84.44
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes a situation where an unauthorized aircraft (helicopter 'Aircraft Y') entered the traffic pattern without communication, creating a significant risk of collision with other aircraft, including a student pilot on their first solo. While it involves potential conflict and separation issues, it doesn't fit neatly into the other specific categories like a bird strike, runway incursion, or equipment malfunction. The primary issue is the lack of adherence to communication protocols and airspace management, leading to a hazardous situation.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes a near-miss situation involving a student pilot and an uncommunicated helicopter. While there was a potential for a mid-air collision, the event did not result in a collision. The core issue is the lack of communication and separation assurance, which doesn't fit neatly into the other specific categories.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "90.00",
+    "llm3_reasoning": "The report describes a situation involving a student pilot on a solo flight encountering an unauthorized and unresponsive aircraft (Helicopter 'Aircraft Y') in the vicinity of the runway and within the traffic pattern. This event involves a significant risk of collision due to proximity and lack of communication, but does not fit neatly into the other defined categories. It's not a bird strike, runway incursion, turbulence, equipment malfunction, ground operation, fuel issue, loss of control, midair collision, runway excursion, or controlled flight into terrain.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 2691,
+    "processed_at": "2025-11-30T09:12:38.912360",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1620,
+    "source_uid": "asn_663487bb-9323-47c0-a472-60093260f7b4",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Runway incursion - vehicle, aircraft or person",
+          "adrep_code": null,
+          "confidence": 30.240000000000002
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes an aircraft that took off and was subsequently lost at sea with no further communication. This event does not fit any of the specific ICAO ADREP categories provided, such as bird strike, runway incursion, turbulence, equipment malfunction, ground operations, fuel issues, loss of control, midair collision, runway excursion, or controlled flight into terrain. Therefore, 'Other' is the most appropriate classification.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes an aircraft that took off and was subsequently lost at sea with no further communication. This does not fit any of the specific ICAO ADREP categories provided, such as bird strike, runway incursion, turbulence, equipment malfunction, ground operations, fuel issues, loss of control, midair collision, runway excursion, or controlled flight into terrain. Therefore, 'Other' is the most appropriate classification.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes an aircraft that took off and was never heard from again, with the assumption it was lost at sea. This indicates a loss of the aircraft and crew without any specific details provided that would fit other defined categories like bird strike, runway incursion, or equipment malfunction.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 2418,
+    "processed_at": "2025-11-30T09:14:21.122796",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1645,
+    "source_uid": "asrs_1b0f5a82-b1ac-41d8-8f16-21d4b920f7c4",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASRS",
+          "category": "Ground Handling",
+          "adrep_code": "RAMP",
+          "confidence": 78.94
+        }
+      ]
+    },
+    "llm1_category": "GRND",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The incident clearly describes an event occurring during ground operations, specifically during pushback. The primary cause was the disconnection of the tow bar, which is a ground handling equipment failure, and the subsequent uncontrolled movement of the aircraft on the ground.",
+    "llm2_category": "GRND",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The incident clearly describes an issue occurring during ground operations, specifically during the pushback phase. The primary cause was the tow bar becoming disconnected from the aircraft, which is a ground handling related event.",
+    "llm3_category": "GRND",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The incident occurred during pushback operations, specifically involving the disconnection of the tow bar from the aircraft and the tug. This clearly falls under ground handling related events.",
+    "final_category": "GRND",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'GRND', overriding BERT",
+    "processing_time_ms": 2001,
+    "processed_at": "2025-11-30T09:21:31.674694",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1753,
+    "source_uid": "asn_13bbd058-d04b-4504-9aea-19f7bbc39304",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Other",
+          "adrep_code": null,
+          "confidence": 28.17
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes a crash shortly after take-off, resulting in fatalities and injuries. This strongly indicates a loss of control leading to impact with the ground or terrain, which aligns with the definition of Controlled Flight Into Terrain.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes a crash shortly after take-off, resulting in fatalities and injuries. This strongly indicates the aircraft collided with the ground or an obstacle, which is the definition of Controlled Flight Into Terrain.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes a crash shortly after take-off, which implies the aircraft impacted the ground or an obstacle while still under some form of control, fitting the definition of Controlled Flight Into Terrain. The severity of injuries and fatalities further supports a significant impact event.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 2386,
+    "processed_at": "2025-12-01T08:25:58.370150",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1760,
+    "source_uid": "asn_6bd75b82-58bf-42aa-85a1-a6e6a014200e",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Runway incursion - vehicle, aircraft or person",
+          "adrep_code": null,
+          "confidence": 21.4
+        }
+      ]
+    },
+    "llm1_category": "RE",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes the aircraft swinging and crashing in shallow waters near Seletar Island during an attempted takeoff. This indicates the aircraft departed the runway surface, which is the definition of a runway excursion.",
+    "llm2_category": "RE",
+    "llm2_confidence": "90.00",
+    "llm2_reasoning": "The report describes the aircraft swinging and crashing in shallow waters near Seletar Island during an attempted takeoff. This indicates the aircraft veered off the intended runway surface, fitting the definition of a Runway Excursion.",
+    "llm3_category": "RE",
+    "llm3_confidence": "90.00",
+    "llm3_reasoning": "The report describes the aircraft swinging and crashing in shallow waters near Seletar Island. This indicates the aircraft deviated from the intended path during the takeoff attempt and left the runway environment, which aligns with the definition of a Runway Excursion.",
+    "final_category": "RE",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'RE', overriding BERT",
+    "processing_time_ms": 2585,
+    "processed_at": "2025-12-01T08:28:00.271543",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1798,
+    "source_uid": "asn_eb72a1d9-3762-4a85-921d-d97612593f55",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Failure or malfunction of an aircraft system or component - related to powerplant",
+          "adrep_code": null,
+          "confidence": 18.65
+        }
+      ]
+    },
+    "llm1_category": "EQUIP",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report explicitly states 'engine failure,' which directly indicates a malfunction of a critical aircraft system (powerplant). This led to a crash on takeoff, a consequence of the equipment failure.",
+    "llm2_category": "EQUIP",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report explicitly states 'engine failure', which directly indicates a malfunction of an aircraft system (powerplant). This led to a crash on takeoff, making equipment malfunction the primary cause.",
+    "llm3_category": "EQUIP",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report explicitly states an 'engine failure' which is a clear indicator of a system or equipment malfunction. This malfunction directly led to the subsequent crash.",
+    "final_category": "EQUIP",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'EQUIP', overriding BERT",
+    "processing_time_ms": 2192,
+    "processed_at": "2025-12-01T08:39:07.560667",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1800,
+    "source_uid": "asn_102d150a-a68f-473e-b4f9-f15b08c1858b",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Ground Collision",
+          "adrep_code": null,
+          "confidence": 24.33
+        }
+      ]
+    },
+    "llm1_category": "RE",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report explicitly states the aircraft 'undershot the runway' and subsequently struck a fence, indicating the aircraft deviated from the intended runway surface. This aligns directly with the definition of a Runway Excursion.",
+    "llm2_category": "RE",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report clearly states the aircraft 'undershot the runway' and its undercarriage 'struck a fence along Redondo Boulevard', indicating an event where the aircraft departed the runway surface. This directly aligns with the definition of a Runway Excursion.",
+    "llm3_category": "RE",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report explicitly states the aircraft 'undershot the runway' and the 'undercarriage struck a fence along Redondo Boulevard'. This clearly indicates the aircraft veered off the runway surface, which is the definition of a Runway Excursion.",
+    "final_category": "RE",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'RE', overriding BERT",
+    "processing_time_ms": 2196,
+    "processed_at": "2025-12-01T08:39:42.347908",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1838,
+    "source_uid": "asn_533d305b-a0a4-4a9b-bd46-f5cc40d7314a",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Unintended flight in IMC",
+          "adrep_code": null,
+          "confidence": 15.8
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes the aircraft crashing back into the sea shortly after takeoff. This indicates a loss of control leading to a collision with the terrain (sea surface), which aligns with the definition of Controlled Flight Into Terrain.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes the aircraft crashing back into the sea shortly after takeoff, indicating a loss of control leading to impact with terrain (the sea). This directly aligns with the definition of Controlled Flight Into Terrain.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "90.00",
+    "llm3_reasoning": "The report describes the aircraft crashing back into the sea shortly after takeoff and sinking. This clearly indicates a loss of control leading to an uncontrolled descent into a surface (the sea), which aligns with the definition of Controlled Flight Into Terrain, even though the 'controlled' aspect implies pilot input leading to the event, the outcome is a collision with the terrain.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 3124,
+    "processed_at": "2025-12-01T08:50:50.591565",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 1855,
+    "source_uid": "asn_cf715c5e-d48e-485f-ae08-d4acc4b4dd5e",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Inflight collision or near collision with terrain, water, or obstacle without indication of loss of control",
+          "adrep_code": null,
+          "confidence": 34.35
+        }
+      ]
+    },
+    "llm1_category": "CFIT",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The aircraft, despite being in a landing phase, collided with the water surface due to an incorrect approach speed and inability to judge distance. This constitutes a controlled flight into terrain (or water in this case) as the aircraft impacted a surface it was intended to operate over, but did so with detrimental consequences.",
+    "llm2_category": "CFIT",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The aircraft, while on a post-maintenance test flight, crashed during landing on a water surface. The excessive landing speed and inability to judge distance to the water resulted in the nose digging in, leading to the aircraft breaking up. This aligns with the definition of a controlled flight into terrain or obstacle, even though the terrain was water.",
+    "llm3_category": "CFIT",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The aircraft, while attempting to land on water, impacted the surface with excessive speed due to an inability to judge distance. This controlled flight into the water surface, resulting in a crash, aligns with the definition of Controlled Flight Into Terrain.",
+    "final_category": "CFIT",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'CFIT', overriding BERT",
+    "processing_time_ms": 2113,
+    "processed_at": "2025-12-01T08:55:49.822234",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 2001,
+    "source_uid": "asn_9df2cf0e-22e8-4456-93ca-79cb6bbc0a9d",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Unintended flight in IMC",
+          "adrep_code": null,
+          "confidence": 20.599999999999998
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes a hijacking incident, which is an act of unlawful interference with an aircraft. This type of event does not fit any of the specific ICAO ADREP categories provided, such as bird strike, runway incursion, or equipment malfunction. Therefore, 'OTHER' is the most appropriate classification.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "99.00",
+    "llm2_reasoning": "The report describes a hijacking, which is an act of unlawful interference with an aircraft. This event does not fit any of the specific ICAO ADREP categories provided, such as bird strikes, runway incursions, or equipment malfunctions. Therefore, 'OTHER' is the most appropriate classification.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes a hijacking event, which is a deliberate act of unlawful interference with an aircraft. This type of event does not fit into any of the specific technical or operational categories provided by ICAO ADREP, such as bird strike, runway incursion, or equipment malfunction. Therefore, 'OTHER' is the most appropriate classification.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 2231,
+    "processed_at": "2025-12-02T08:01:48.546430",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  },
+  {
+    "id": 2003,
+    "source_uid": "asn_b1bca9cc-0df3-4c59-a207-1b2f54a34e12",
+    "bert_results": {
+      "predictions": [
+        {
+          "model": "BERT-ASN",
+          "category": "Other",
+          "adrep_code": null,
+          "confidence": 37.11
+        }
+      ]
+    },
+    "llm1_category": "OTHER",
+    "llm1_confidence": "95.00",
+    "llm1_reasoning": "The report describes an on-board explosion leading to a crash, with potential causes like friendly fire or sabotage. None of the specific ICAO ADREP categories (e.g., Bird Strike, Runway Incursion, Equipment Malfunction) accurately describe the primary event of an explosion and its potential causes. Therefore, 'Other' is the most appropriate classification.",
+    "llm2_category": "OTHER",
+    "llm2_confidence": "95.00",
+    "llm2_reasoning": "The report describes an on-board explosion leading to a crash, with potential causes like friendly fire or sabotage. This event does not fit any of the specific ICAO ADREP categories like bird strike, runway incursion, or equipment malfunction. Therefore, 'Other' is the most appropriate classification.",
+    "llm3_category": "OTHER",
+    "llm3_confidence": "95.00",
+    "llm3_reasoning": "The report describes an on-board explosion leading to a crash, with potential causes like friendly fire or sabotage. This event does not fit any of the specific ICAO ADREP categories like bird strike, runway incursion, equipment malfunction, or loss of control. Therefore, 'Other' is the most appropriate classification.",
+    "final_category": "OTHER",
+    "final_confidence": "80.00",
+    "routing_decision": "auto_accept",
+    "consensus_rule": "Rule 5",
+    "rule_explanation": "RULE 5: All 3 LLMs unanimous on 'OTHER', overriding BERT",
+    "processing_time_ms": 2223,
+    "processed_at": "2025-12-02T08:02:23.015293",
+    "is_complete": false,
+    "evaluator_id": "RONNIE"
+  }
+]
