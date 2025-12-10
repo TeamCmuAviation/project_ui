@@ -359,7 +359,19 @@
             <div class="col-right">
                 <!-- Incidents by Category (Top Aligned, Matched Height) -->
                 <div class="card-panel">
-                    <div class="panel-header">Incidents by Category</div>
+                    <div class="panel-header d-flex justify-content-between align-items-center">
+                        <span>Incidents by Category</span>
+                        <div class="d-flex align-items-center">
+                            <input type="month" id="catStart" class="form-control form-control-sm mr-1"
+                                style="width: 130px; font-size: 0.8rem;" placeholder="Start">
+                            <input type="month" id="catEnd" class="form-control form-control-sm mr-1"
+                                style="width: 130px; font-size: 0.8rem;" placeholder="End">
+                            <button id="btnReloadCategory" class="btn btn-sm btn-outline-secondary"
+                                title="Update Chart">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
                     <div class="panel-body" style="min-height: 400px;">
                         <canvas id="phaseChart"></canvas>
                     </div>
@@ -505,7 +517,8 @@
     fetchTimeData();
 
     // --- R1 C2: Phase (Bar) -> Now Incidents by Category ---
-    new Chart(document.getElementById('phaseChart'), {
+    // --- R1 C2: Phase (Bar) -> Now Incidents by Category (Interactive) ---
+    let phaseChartInstance = new Chart(document.getElementById('phaseChart'), {
         type: 'bar',
         data: {
             labels: getLabels(categoryData),
@@ -523,6 +536,29 @@
             scales: { y: { display: false, grid: { display: false } } }
         }
     });
+
+    const fetchCategoryData = async () => {
+        const start = document.getElementById('catStart').value;
+        const end = document.getElementById('catEnd').value;
+
+        let url = `{% url 'dashboard_category_data' %}?t=${new Date().getTime()}`;
+        if (start) url += `&start_period=${start}`;
+        if (end) url += `&end_period=${end}`;
+
+        try {
+            const resp = await fetch(url);
+            const data = await resp.json();
+
+            phaseChartInstance.data.labels = getLabels(data);
+            phaseChartInstance.data.datasets[0].data = getValues(data);
+            phaseChartInstance.update();
+        } catch (e) {
+            console.error("Category Fetch Failed", e);
+        }
+    };
+
+    document.getElementById('catStart').addEventListener('change', fetchCategoryData);
+    document.getElementById('catEnd').addEventListener('change', fetchCategoryData);
 
     // --- R1 C3: Top Aircraft (Vert Bar) ---
     new Chart(document.getElementById('aircraftVertChart'), {

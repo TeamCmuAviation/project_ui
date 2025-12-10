@@ -580,3 +580,36 @@ def dashboard_chart_data(request):
     except Exception as e:
         from django.http import JsonResponse
         return JsonResponse({'error': str(e)}, status=500)
+
+def dashboard_category_data(request):
+    """
+    Proxy view to fetch top categories with optional time range.
+    Params: start_period (YYYY-MM), end_period (YYYY-MM)
+    """
+    api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
+    
+    # Get parameters
+    start_period = request.GET.get('start_period')
+    end_period = request.GET.get('end_period')
+    
+    params = {
+        'category': 'final_category', 
+        'n': 10
+    }
+    
+    if start_period:
+        params['start_period'] = start_period
+    if end_period:
+        params['end_period'] = end_period
+        
+    try:
+        resp = requests.get(f"{api_base}/aggregates/top-n", params=params, timeout=30)
+        if resp.status_code == 200:
+            from django.http import JsonResponse
+            return JsonResponse(resp.json(), safe=False)
+        else:
+            from django.http import JsonResponse
+            return JsonResponse({'error': f"API Error: {resp.status_code}"}, status=resp.status_code)
+    except requests.RequestException as e:
+        from django.http import JsonResponse
+        return JsonResponse({'error': str(e)}, status=500)
