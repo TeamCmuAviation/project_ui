@@ -287,7 +287,7 @@
                 <div class="card-panel">
                     <div class="panel-header" style="justify-content: space-between; flex-wrap: wrap; gap: 10px;">
                         <span>Incidents Over Time</span>
-                        <div style="display: flex; gap: 8px;">
+                        <div style="display: flex; gap: 8px; align-items: center;">
                             <select id="timeFilterClass" class="form-select form-select-sm"
                                 style="width: auto; font-size: 0.8rem; padding: 2px 5px; height: 26px;">
                                 <option value="">All Classifications</option>
@@ -304,12 +304,18 @@
                                 <option value="Approach">Approach</option>
                                 <option value="Taxi">Taxi</option>
                             </select>
+                            <button id="btnReloadTime" class="btn btn-sm btn-outline-secondary" title="Update Chart"
+                                style="height: 26px; padding: 0 8px;">
+                                <i class="fas fa-sync-alt" style="font-size: 0.8rem;"></i>
+                            </button>
                         </div>
                     </div>
                     <div class="panel-body" style="min-height: 400px;">
                         <canvas id="timeChart"></canvas>
                     </div>
                 </div>
+
+
 
                 <!-- Data Table -->
                 <div class="card-panel">
@@ -360,7 +366,7 @@
                 <!-- Incidents by Category (Top Aligned, Matched Height) -->
                 <div class="card-panel">
                     <div class="panel-header d-flex justify-content-between align-items-center">
-                        <span>Incidents by Category</span>
+                        <span>Incidents by Classification</span>
                         <div class="d-flex align-items-center">
                             <input type="month" id="catStart" class="form-control form-control-sm mr-1"
                                 style="width: 130px; font-size: 0.8rem;" placeholder="Start">
@@ -485,33 +491,41 @@
 
     // AJAX Handling for Time Chart
     const fetchTimeData = async () => {
-        const cat = document.getElementById('timeFilterClass').value;
+        const final_category = document.getElementById('timeFilterClass').value;
         const phase = document.getElementById('timeFilterPhase').value;
+        const btn = document.getElementById('btnReloadTime');
 
         // Build Params
-        const params = new URLSearchParams();
-        params.append('period', 'month'); // Default
-        if (cat) params.append('final_categories[]', cat);
-        if (phase) params.append('phases[]', phase);
+        // Note: Using the dashboard_chart_data proxy URL which expects final_categories[] and phases[]
+        let url = `{% url 'dashboard_chart_data' %}?t=${new Date().getTime()}`;
+        if (final_category) url += `&final_categories[]=${final_category}`;
+        if (phase) url += `&phases[]=${phase}`;
+
+        // Visual feedback
+        const originalIcon = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size: 0.8rem;"></i>';
+        btn.disabled = true;
 
         try {
-            const resp = await fetch(`/dashboard/api/chart-data/?${params.toString()}`);
-            if (!resp.ok) throw new Error('API Error');
+            const resp = await fetch(url);
             const data = await resp.json();
 
-            // Update Chart
             timeChartInstance.data.labels = getLabels(data);
             timeChartInstance.data.datasets[0].data = getValues(data);
             timeChartInstance.update();
-
         } catch (e) {
             console.error("Chart Update Failed", e);
+        } finally {
+            btn.innerHTML = originalIcon;
+            btn.disabled = false;
         }
     };
 
     // Listeners
-    document.getElementById('timeFilterClass').addEventListener('change', fetchTimeData);
-    document.getElementById('timeFilterPhase').addEventListener('change', fetchTimeData);
+    // Removed auto-reload on change
+    // document.getElementById('timeFilterClass').addEventListener('change', fetchTimeData);
+    // document.getElementById('timeFilterPhase').addEventListener('change', fetchTimeData);
+    document.getElementById('btnReloadTime').addEventListener('click', fetchTimeData);
 
     // Initial Load
     fetchTimeData();
