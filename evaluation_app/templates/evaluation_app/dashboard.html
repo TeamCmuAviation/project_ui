@@ -140,90 +140,28 @@
         margin-top: 5px;
     }
 
-    /* Chart Grid - 3x3 */
+    /* Chart Grid - 2 Column (Left Main, Right Sidebar) */
     .chart-grid {
         display: grid;
-        grid-template-columns: 1fr 1.5fr 1fr;
-        /* Small, Medium, Medium/Smallish */
-        grid-template-rows: repeat(3, auto);
+        grid-template-columns: 2fr 1fr;
         gap: 20px;
         margin-bottom: 20px;
+        align-items: start;
+        /* Prevent stretching */
     }
 
-    .card-panel {
-        background: white;
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-        padding: 0;
+    .col-left {
         display: flex;
         flex-direction: column;
-        border: 1px solid #e0e0e0;
+        gap: 20px;
+        grid-column: 1;
     }
 
-    .panel-header {
-        padding: 12px 15px;
-        border-bottom: 1px solid #eee;
-        font-weight: 700;
-        font-size: 0.9rem;
-        color: var(--cmu-black);
+    .col-right {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #fff;
-    }
-
-    .panel-body {
-        padding: 15px;
-        flex-grow: 1;
-        min-height: 250px;
-        position: relative;
-    }
-
-    /* Specific Grid Areas */
-    .g-r1-c1 {
-        grid-column: 1;
-        grid-row: 1;
-    }
-
-    .g-r1-c2 {
+        flex-direction: column;
+        gap: 20px;
         grid-column: 2;
-        grid-row: 1;
-    }
-
-    .g-r1-c3 {
-        grid-column: 3;
-        grid-row: 1;
-    }
-
-    .g-r2-c1 {
-        grid-column: 1;
-        grid-row: 2;
-    }
-
-    .g-r2-c2 {
-        grid-column: 2;
-        grid-row: 2;
-    }
-
-    .g-r2-c3 {
-        grid-column: 3;
-        grid-row: 2;
-    }
-
-    .g-r3-c1 {
-        grid-column: 1;
-        grid-row: 3;
-    }
-
-    .g-r3-c2 {
-        grid-column: 2;
-        grid-row: 3;
-    }
-
-    /* Data Table */
-    .g-r3-c3 {
-        grid-column: 3;
-        grid-row: 3;
     }
 
     /* Data Table Styles */
@@ -341,123 +279,130 @@
             </div>
         </div>
 
-        <!-- Chart Grid (3x3) -->
+        <!-- Chart Grid (2 Column) -->
         <div class="chart-grid">
-            <div class="card-panel g-r1-c1">
-                <div class="panel-header" style="justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-                    <span>Incidents Over Time</span>
-                    <div style="display: flex; gap: 8px;">
-                        <select id="timeFilterClass" class="form-select form-select-sm"
-                            style="width: auto; font-size: 0.8rem; padding: 2px 5px; height: 26px;">
-                            <option value="">All Classifications</option>
-                            {% for code, details in categories.items %}
-                            <option value="{{ code }}">{{ details.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <select id="timeFilterPhase" class="form-select form-select-sm"
-                            style="width: auto; font-size: 0.8rem; padding: 2px 5px; height: 26px;">
-                            <option value="">All Phases</option>
-                            <option value="Landing">Landing</option>
-                            <option value="Takeoff">Takeoff</option>
-                            <option value="Cruise">Cruise</option>
-                            <option value="Approach">Approach</option>
-                            <option value="Taxi">Taxi</option>
-                        </select>
+            <!-- Left Main Column (2/3) -->
+            <div class="col-left">
+                <!-- Incidents Over Time -->
+                <div class="card-panel">
+                    <div class="panel-header" style="justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <span>Incidents Over Time</span>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="timeFilterClass" class="form-select form-select-sm"
+                                style="width: auto; font-size: 0.8rem; padding: 2px 5px; height: 26px;">
+                                <option value="">All Classifications</option>
+                                {% for code, details in categories.items %}
+                                <option value="{{ code }}">{{ details.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <select id="timeFilterPhase" class="form-select form-select-sm"
+                                style="width: auto; font-size: 0.8rem; padding: 2px 5px; height: 26px;">
+                                <option value="">All Phases</option>
+                                <option value="Landing">Landing</option>
+                                <option value="Takeoff">Takeoff</option>
+                                <option value="Cruise">Cruise</option>
+                                <option value="Approach">Approach</option>
+                                <option value="Taxi">Taxi</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="panel-body" style="min-height: 400px;">
+                        <canvas id="timeChart"></canvas>
                     </div>
                 </div>
-                <div class="panel-body">
-                    <canvas id="timeChart"></canvas>
+
+                <!-- Data Table -->
+                <div class="card-panel">
+                    <div class="panel-header">Recent Classification Results</div>
+                    <div class="table-container p-0">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Operator</th>
+                                    <th>Aircraft</th>
+                                    <th>Phase</th>
+                                    <th>Cat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in table_data %}
+                                <tr>
+                                    <td>{{ item.date }}</td>
+                                    <td>{{ item.operator }}</td>
+                                    <td>{{ item.aircraft }}</td>
+                                    <td>{{ item.phase }}</td>
+                                    <td><span class="badge bg-secondary">{{ item.category }}</span></td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No data available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Footer/Aggregate -->
+                <div class="card-panel" style="background: var(--cmu-red); color: white;">
+                    <div
+                        class="panel-body d-flex flex-direction-column justify-content-center align-items-center text-center">
+                        <i class="fas fa-shield-alt fa-3x mb-3"></i>
+                        <h5>Safe AIr Verified</h5>
+                        <p class="small mb-0 opacity-75">Data integrity checks passed.</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- R1 C2: Phase Breakdown (Using Top Aircraft Data as proxy for Phase in this mock) -->
-            <div class="card-panel g-r1-c2">
-                <div class="panel-header">Incidents by Category</div>
-                <div class="panel-body">
-                    <canvas id="phaseChart"></canvas>
+            <!-- Right Sidebar Column (1/3) -->
+            <div class="col-right">
+                <!-- Incidents by Category (Top Aligned, Matched Height) -->
+                <div class="card-panel">
+                    <div class="panel-header">Incidents by Category</div>
+                    <div class="panel-body" style="min-height: 400px;">
+                        <canvas id="phaseChart"></canvas>
+                    </div>
                 </div>
-            </div>
 
-            <!-- R1 C3: Top Aircraft (Vertical) -->
-            <div class="card-panel g-r1-c3">
-                <div class="panel-header">Top Aircraft Types</div>
-                <div class="panel-body">
-                    <canvas id="aircraftVertChart"></canvas>
+                <!-- Top Aircraft -->
+                <div class="card-panel">
+                    <div class="panel-header">Top Aircraft Types</div>
+                    <div class="panel-body">
+                        <canvas id="aircraftVertChart"></canvas>
+                    </div>
                 </div>
-            </div>
 
-            <!-- R2 C1: Trend (Short Term) -->
-            <div class="card-panel g-r2-c1">
-                <div class="panel-header">Short-Term Trend</div>
-                <div class="panel-body">
-                    <canvas id="trendChart"></canvas>
+                <!-- Short Term Trend -->
+                <div class="card-panel">
+                    <div class="panel-header">Short-Term Trend</div>
+                    <div class="panel-body">
+                        <canvas id="trendChart"></canvas>
+                    </div>
                 </div>
-            </div>
 
-            <!-- R2 C2: Top Operators (Horizontal) -->
-            <div class="card-panel g-r2-c2">
-                <div class="panel-header">Top 5 Operators</div>
-                <div class="panel-body">
-                    <canvas id="operatorChart"></canvas>
+                <!-- Top 5 Operators -->
+                <div class="card-panel">
+                    <div class="panel-header">Top 5 Operators</div>
+                    <div class="panel-body">
+                        <canvas id="operatorChart"></canvas>
+                    </div>
                 </div>
-            </div>
 
-            <!-- R2 C3: Heatmap Correlation -->
-            <div class="card-panel g-r2-c3">
-                <div class="panel-header">Phase vs Acft Correlation</div>
-                <div class="panel-body">
-                    <canvas id="heatmapChart"></canvas>
+                <!-- Heatmap -->
+                <div class="card-panel">
+                    <div class="panel-header">Phase vs Acft Correlation</div>
+                    <div class="panel-body">
+                        <canvas id="heatmapChart"></canvas>
+                    </div>
                 </div>
-            </div>
 
-            <!-- R3 C1: Footer/Aggregate -->
-            <div class="card-panel g-r3-c1" style="background: var(--cmu-red); color: white;">
-                <div
-                    class="panel-body d-flex flex-direction-column justify-content-center align-items-center text-center">
-                    <i class="fas fa-shield-alt fa-3x mb-3"></i>
-                    <h5>Safe AIr Verified</h5>
-                    <p class="small mb-0 opacity-75">Data integrity checks passed.</p>
-                </div>
-            </div>
-
-            <!-- R3 C2: Data Table -->
-            <div class="card-panel g-r3-c2">
-                <div class="panel-header">Recent Classification Results</div>
-                <div class="table-container p-0">
-                    <table class="table table-striped mb-0">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Operator</th>
-                                <th>Aircraft</th>
-                                <th>Phase</th>
-                                <th>Cat</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in table_data %}
-                            <tr>
-                                <td>{{ item.date }}</td>
-                                <td>{{ item.operator }}</td>
-                                <td>{{ item.aircraft }}</td>
-                                <td>{{ item.phase }}</td>
-                                <td><span class="badge bg-secondary">{{ item.category }}</span></td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">No data available</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- R3 C3: Hierarchical Dist -->
-            <div class="card-panel g-r3-c3">
-                <div class="panel-header">Incident Distribution</div>
-                <div class="panel-body">
-                    <canvas id="hierarchyChart"></canvas>
+                <!-- Incident Distribution -->
+                <div class="card-panel">
+                    <div class="panel-header">Incident Distribution</div>
+                    <div class="panel-body">
+                        <canvas id="hierarchyChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -482,8 +427,8 @@
     const hierarchyData = {{ hierarchy| safe }};
 
     // Helper: Parse Counts
-    const getLabels = (data, k = 'key') => data.map(d => d[k] || d.date || d.name);
-    const getValues = (data) => data.map(d => d.count || d.value);
+    const getLabels = (data, k = 'key') => data.map(d => d[k] || d.date || d.name || d.period_start);
+    const getValues = (data) => data.map(d => d.count || d.value || d.incident_count);
 
     // --- R1 C1: Time Series (Interactive) ---
     const ctxTime = document.getElementById('timeChart').getContext('2d');
@@ -527,13 +472,13 @@
 
     // AJAX Handling for Time Chart
     const fetchTimeData = async () => {
-        const cls = document.getElementById('timeFilterClass').value;
+        const cat = document.getElementById('timeFilterClass').value;
         const phase = document.getElementById('timeFilterPhase').value;
 
         // Build Params
         const params = new URLSearchParams();
         params.append('period', 'month'); // Default
-        if (cls) params.append('classifications[]', cls);
+        if (cat) params.append('final_categories[]', cat);
         if (phase) params.append('phases[]', phase);
 
         try {
@@ -554,6 +499,9 @@
     // Listeners
     document.getElementById('timeFilterClass').addEventListener('change', fetchTimeData);
     document.getElementById('timeFilterPhase').addEventListener('change', fetchTimeData);
+
+    // Initial Load
+    fetchTimeData();
 
     // --- R1 C2: Phase (Bar) ---
     // Using Mock Aircraft data as proxy for categories just to show diff chart

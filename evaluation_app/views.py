@@ -503,7 +503,7 @@ class DashboardView(View):
                         "operator": item.get('origin_operator'),
                         "aircraft": item.get('origin_aircraft_type'),
                         "phase": item.get('origin_phase'),
-                        "category": item.get('human_category') or item.get('llm_category') or 'UNK'
+                        "category": item.get('final_category') or 'UNK'
                     })
                 context['table_data'] = table_data
             else:
@@ -525,14 +525,14 @@ class DashboardView(View):
 def dashboard_chart_data(request):
     """
     Proxy view to fetch interactive chart data from FastAPI
-    Params: classifications (list), phases (list), period (str)
+    Params: final_categories (list), phases (list), period (str)
     """
     api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
     
     # Get parameters
-    classifications = request.GET.getlist('classifications[]') # AJAX often sends arrays with []
-    if not classifications:
-         classifications = request.GET.getlist('classifications') # Standard GET
+    final_categories = request.GET.getlist('final_categories[]') # AJAX often sends arrays with []
+    if not final_categories:
+         final_categories = request.GET.getlist('final_categories') # Standard GET
          
     phases = request.GET.getlist('phases[]')
     if not phases:
@@ -541,7 +541,7 @@ def dashboard_chart_data(request):
     period = request.GET.get('period', 'month')
     
     params = {'period': period}
-    if classifications: params['classifications'] = classifications
+    if final_categories: params['final_categories'] = final_categories
     if phases: params['phases'] = phases
     
     try:
