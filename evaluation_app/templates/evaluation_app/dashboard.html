@@ -425,9 +425,10 @@
     const operatorData = {{ top_operators| safe }};
     const heatmapData = {{ heatmap| safe }};
     const hierarchyData = {{ hierarchy| safe }};
+    const categoryData = {{ incidents_by_category| safe }};
 
     // Helper: Parse Counts
-    const getLabels = (data, k = 'key') => data.map(d => d[k] || d.date || d.name || d.period_start);
+    const getLabels = (data, k = 'key') => data.map(d => d[k] || d.date || d.name || d.period_start || d.final_category || d.category || d.category_value);
     const getValues = (data) => data.map(d => d.count || d.value || d.incident_count);
 
     // --- R1 C1: Time Series (Interactive) ---
@@ -503,15 +504,14 @@
     // Initial Load
     fetchTimeData();
 
-    // --- R1 C2: Phase (Bar) ---
-    // Using Mock Aircraft data as proxy for categories just to show diff chart
+    // --- R1 C2: Phase (Bar) -> Now Incidents by Category ---
     new Chart(document.getElementById('phaseChart'), {
         type: 'bar',
         data: {
-            labels: ['Landing', 'Takeoff', 'Cruise', 'Taxi', 'Approach'],
+            labels: getLabels(categoryData),
             datasets: [{
                 label: 'Incidents',
-                data: [45, 30, 25, 15, 10],
+                data: getValues(categoryData),
                 backgroundColor: CMU_BLACK,
                 borderRadius: 4
             }]

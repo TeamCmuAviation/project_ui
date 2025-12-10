@@ -442,7 +442,7 @@ class DashboardView(View):
         try:
             # 1. Key Metrics (Statistics)
             # GET /aggregates/statistics
-            resp_stats = requests.get(f"{api_base}/aggregates/statistics", params=params, timeout=10)
+            resp_stats = requests.get(f"{api_base}/aggregates/statistics", params=params, timeout=15)
             if resp_stats.status_code == 200:
                 stats = resp_stats.json()
                 # Assuming stats returns keys like 'total_incidents', 'fatal_incidents', 'fatalities', etc.
@@ -457,39 +457,63 @@ class DashboardView(View):
                 non_fatal = stats.get('total_incidents', 0) - fatal
                 context['metric_split'] = f"{fatal} Fatal / {non_fatal} Non-Fatal"
             else:
-                 # Fallbacks
+                print(f"Stats API Failed: {resp_stats.status_code} - {resp_stats.text}")
+                # Fallbacks
                 context['metric_incidents'] = 0
                 context['metric_fatal'] = 0
                 context['metric_fatalities'] = 0
                 context['metric_ground'] = 0
                 context['metric_split'] = "0 Fatal / 0 Non-Fatal"
+        except Exception as e:
+            print(f"Stats API Error: {e}")
+            context['metric_incidents'] = 0
+            context['metric_fatal'] = 0
+            context['metric_fatalities'] = 0
+            context['metric_ground'] = 0
+            context['metric_split'] = "0 Fatal / 0 Non-Fatal"
 
+        # Chart Data Fetching (Protected)
+        try:
             # 2. Top Aggregates (Aircraft)
-            resp_ac = requests.get(f"{api_base}/aggregates/top-n", params={**params, 'category': 'aircraft_type', 'n': 5}, timeout=10)
+            resp_ac = requests.get(f"{api_base}/aggregates/top-n", params={**params, 'category': 'aircraft_type', 'n': 5}, timeout=30)
             context['top_aircraft'] = json.dumps(resp_ac.json()) if resp_ac.status_code == 200 else "[]"
 
+
             # 3. Top Aggregates (Operator)
-            resp_op = requests.get(f"{api_base}/aggregates/top-n", params={**params, 'category': 'operator', 'n': 5}, timeout=10)
+            resp_op = requests.get(f"{api_base}/aggregates/top-n", params={**params, 'category': 'operator', 'n': 5}, timeout=30)
             context['top_operators'] = json.dumps(resp_op.json()) if resp_op.status_code == 200 else "[]"
 
+            # 3.5 Top Aggregates (Category - using final_category)
+            # Remove period filter for this chart to match user's Postman call and show overall top categories
+            params_cat = params.copy()
+            if 'period' in params_cat:
+                del params_cat['period']
+            resp_cat = requests.get(f"{api_base}/aggregates/top-n", params={**params_cat, 'category': 'final_category', 'n': 10}, timeout=30)
+            
+            if resp_cat.status_code == 200:
+                context['incidents_by_category'] = json.dumps(resp_cat.json())
+            else:
+                # Removed file logging
+                context['incidents_by_category'] = "[]"
+
             # 4. Time Series (Line Chart)
-            resp_time = requests.get(f"{api_base}/aggregates/over-time", params={**params, 'period': 'month'}, timeout=10)
+            resp_time = requests.get(f"{api_base}/aggregates/over-time", params={**params, 'period': 'month'}, timeout=30)
             context['time_series'] = json.dumps(resp_time.json()) if resp_time.status_code == 200 else "[]"
 
             # 5. Heatmap (Bubble Chart format)
             # heatmap endpoint typically returns {dim1, dim2, count}
-            resp_heat = requests.get(f"{api_base}/aggregates/heatmap", params={**params, 'dimension1': 'phase', 'dimension2': 'aircraft_type'}, timeout=15)
+            resp_heat = requests.get(f"{api_base}/aggregates/heatmap", params={**params, 'dimension1': 'phase', 'dimension2': 'aircraft_type'}, timeout=30)
             context['heatmap'] = json.dumps(resp_heat.json()) if resp_heat.status_code == 200 else "[]"
             
             # 6. Hierarchy
-            resp_hier = requests.get(f"{api_base}/aggregates/hierarchy", params={**params}, timeout=15)
+            resp_hier = requests.get(f"{api_base}/aggregates/hierarchy", params={**params}, timeout=30)
             # Hierarchy endpoint might return a tree or list. 
             # If list of {key, count}, it works directly with our template.
             context['hierarchy'] = json.dumps(resp_hier.json()) if resp_hier.status_code == 200 else "[]"
-            
+
             # 7. Data Table (Recent Incidents)
             # Reusing classification results endpoint or similar to get list
-            resp_table = requests.get(f"{api_base}/classification-results", params={'skip': 0, 'limit': 10, 'evaluator_id': request.session.get('evaluator_id')}, timeout=10)
+            resp_table = requests.get(f"{api_base}/classification-results", params={'skip': 0, 'limit': 10, 'evaluator_id': request.session.get('evaluator_id')}, timeout=30)
             
             if resp_table.status_code == 200:
                 # Transform response to match template expectations
@@ -510,11 +534,12 @@ class DashboardView(View):
                  context['table_data'] = []
 
         except requests.RequestException as e:
+            # Removed file logging
             messages.error(request, f"Error gathering dashboard data: {e}")
             # Ensure context has defaults
-            context['metric_incidents'] = 0
             context['top_aircraft'] = "[]"
             context['top_operators'] = "[]"
+            context['incidents_by_category'] = "[]"
             context['time_series'] = "[]"
             context['heatmap'] = "[]"
             context['hierarchy'] = "[]"
