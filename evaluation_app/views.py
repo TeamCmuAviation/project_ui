@@ -555,9 +555,9 @@ def dashboard_chart_data(request):
     api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
     
     # Get parameters
-    final_categories = request.GET.getlist('final_categories[]') # AJAX often sends arrays with []
+    final_categories = request.GET.getlist('final_categories[]') 
     if not final_categories:
-         final_categories = request.GET.getlist('final_categories') # Standard GET
+         final_categories = request.GET.getlist('final_categories')
          
     phases = request.GET.getlist('phases[]')
     if not phases:
@@ -584,7 +584,6 @@ def dashboard_chart_data(request):
 def dashboard_category_data(request):
     """
     Proxy view to fetch top categories with optional time range.
-    Params: start_period (YYYY-MM), end_period (YYYY-MM)
     """
     api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
     
@@ -597,11 +596,108 @@ def dashboard_category_data(request):
         'n': 10
     }
     
-    if start_period:
-        params['start_period'] = start_period
-    if end_period:
-        params['end_period'] = end_period
+    if start_period: params['start_period'] = start_period
+    if end_period: params['end_period'] = end_period
         
+    try:
+        resp = requests.get(f"{api_base}/aggregates/top-n", params=params, timeout=30)
+        if resp.status_code == 200:
+            from django.http import JsonResponse
+            return JsonResponse(resp.json(), safe=False)
+        else:
+            from django.http import JsonResponse
+            return JsonResponse({'error': f"API Error: {resp.status_code}"}, status=resp.status_code)
+    except requests.RequestException as e:
+        from django.http import JsonResponse
+        return JsonResponse({'error': str(e)}, status=500)
+
+def dashboard_geo_data(request):
+    """
+    Fetches raw incidents from /incidents/locations and aggregates by lat/lon.
+    """
+    api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
+    
+    # Get parameters
+    start_period = request.GET.get('start_period')
+    end_period = request.GET.get('end_period')
+    
+    params = {}
+    if start_period: params['start_period'] = start_period
+    if end_period: params['end_period'] = end_period
+    
+    try:
+        # 1. Fetch Aggregated Data
+        resp = requests.get(f"{api_base}/aggregates/by-location", params=params, timeout=30)
+        if resp.status_code != 200:
+             from django.http import JsonResponse
+             return JsonResponse({'error': f"API Error (Aggregates): {resp.status_code}"}, status=resp.status_code)
+        
+        agg_data = resp.json() # List of {"location": "ICAO", "incident_count": N}
+        
+        # 2. Extract Codes
+        # Filter out invalid codes if any
+        codes = [item.get('location') for item in agg_data if item.get('location')]
+        unique_codes = list(set(codes))
+        
+        # 3. Fetch Airport Details (Batched)
+        airport_details = {}
+        batch_size = 50
+        for i in range(0, len(unique_codes), batch_size):
+            batch = unique_codes[i:i + batch_size]
+            try:
+                # pass codes as multiple query params: ?codes=AAA&codes=BBB
+                airport_resp = requests.get(f"{api_base}/airports", params={'codes': batch}, timeout=10)
+                if airport_resp.status_code == 200:
+                    airport_details.update(airport_resp.json()) # Dict { "ICAO": { ... } }
+            except Exception as e:
+                print(f"Error fetching airport batch: {e}")
+                # Continue processing other batches even if one fails
+        
+        # 4. Merge Data
+        results = []
+        for item in agg_data:
+            icao = item.get('location')
+            count = item.get('incident_count')
+            details = airport_details.get(icao, {})
+            
+            # Use details if available, otherwise unknown
+            name = details.get('name', f"Unknown ({icao})")
+            lat = details.get('lat')
+            lon = details.get('lon')
+            
+            if lat is not None and lon is not None:
+                results.append({
+                    'location': icao,
+                    'location_name': name,
+                    'lat': lat,
+                    'lon': lon,
+                    'incident_count': count
+                })
+        
+        from django.http import JsonResponse
+        return JsonResponse(results, safe=False)
+
+    except requests.RequestException as e:
+        from django.http import JsonResponse
+        return JsonResponse({'error': str(e)}, status=500)
+
+def dashboard_location_bar_data(request):
+    """
+    Proxy view for Top-N Locations bar chart.
+    """
+    api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
+    
+    params = {
+        'category': 'location', 
+        'n': 10
+    }
+    
+    # Pass through optional time (though bar chart might use specific inputs)
+    start_period = request.GET.get('start_period')
+    end_period = request.GET.get('end_period')
+    if start_period: params['start_period'] = start_period
+    if end_period: params['end_period'] = end_period
+    
     try:
         resp = requests.get(f"{api_base}/aggregates/top-n", params=params, timeout=30)
         if resp.status_code == 200:
