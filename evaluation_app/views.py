@@ -625,6 +625,10 @@ def dashboard_geo_data(request):
     if start_period: params['start_period'] = start_period
     if end_period: params['end_period'] = end_period
     
+    location = request.GET.get('location')
+    if location:
+        params['locations'] = [location]
+    
     try:
         # 1. Fetch Aggregated Data
         resp = requests.get(f"{api_base}/aggregates/by-location", params=params, timeout=30)
@@ -697,6 +701,10 @@ def dashboard_location_bar_data(request):
     end_period = request.GET.get('end_period')
     if start_period: params['start_period'] = start_period
     if end_period: params['end_period'] = end_period
+    
+    location = request.GET.get('location')
+    if location:
+        params['locations'] = [location]
     
     try:
         resp = requests.get(f"{api_base}/aggregates/top-n", params=params, timeout=30)
