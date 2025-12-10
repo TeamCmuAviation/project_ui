@@ -5,6 +5,7 @@ from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 import requests
+import json
 
 # Hardcoded ICAO Taxonomies for the dropdown
 # Rich ICAO Taxonomies for the dropdown
@@ -213,16 +214,25 @@ class LoginView(View):
         code = request.POST.get('access_code', '').strip().upper()
         if code in VALID_EVALUATORS:
             request.session['evaluator_id'] = code
+            next_url = request.GET.get('next') or request.POST.get('next')
+            if next_url:
+                return redirect(next_url)
             return redirect('task_list')
         else:
             messages.error(request, "Invalid access code. Access denied.")
             return redirect('login')
 
+def logout_view(request):
+    request.session.flush()
+    messages.success(request, "Logged out successfully.")
+    return redirect('dashboard')
+
 
 class TaskListView(View):
     def dispatch(self, request, *args, **kwargs):
         if not request.session.get('evaluator_id'):
-            return redirect('login')
+            from django.urls import reverse
+            return redirect(f"{reverse('login')}?next={request.path}")
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
@@ -316,7 +326,8 @@ def random_task(request):
 class EvaluationInterfaceView(View):
     def dispatch(self, request, *args, **kwargs):
         if not request.session.get('evaluator_id'):
-            return redirect('login')
+            from django.urls import reverse
+            return redirect(f"{reverse('login')}?next={request.path}")
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, uid):
@@ -392,3 +403,155 @@ class EvaluationInterfaceView(View):
             messages.error(request, f"Submission error: {e}")
 
         return redirect('task_list')
+
+
+class DashboardView(View):
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
+        
+        # Extract filters
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        operator = request.GET.get('operator')
+        phase = request.GET.get('phase')
+        aircraft_type = request.GET.get('aircraft_type')
+
+        # Build query params
+        params = {}
+        if start_date: params['start_date'] = start_date
+        if end_date: params['end_date'] = end_date
+        if operator: params['operator'] = operator
+        if phase: params['phase'] = phase
+        if aircraft_type: params['aircraft_type'] = aircraft_type
+
+        # Fetch Data
+        context = {
+            'filters': {
+                'start_date': start_date,
+                'end_date': end_date,
+                'operator': operator,
+                'phase': phase,
+                'aircraft_type': aircraft_type
+            },
+            'categories': ICAO_CATEGORIES  # Reuse existing categories for filters if needed
+        }
+
+        try:
+            # 1. Key Metrics (Statistics)
+            # GET /aggregates/statistics
+            resp_stats = requests.get(f"{api_base}/aggregates/statistics", params=params, timeout=10)
+            if resp_stats.status_code == 200:
+                stats = resp_stats.json()
+                # Assuming stats returns keys like 'total_incidents', 'fatal_incidents', 'fatalities', etc.
+                # If structure is different, we fallback to defaults.
+                context['metric_incidents'] = stats.get('total_incidents', 0)
+                context['metric_fatal'] = stats.get('fatal_incidents', 0)
+                context['metric_fatalities'] = stats.get('total_fatalities', 0)
+                # Derived or extra metrics if available
+                context['metric_ground'] = stats.get('ground_incidents', 0) 
+                
+                fatal = stats.get('fatal_incidents', 0)
+                non_fatal = stats.get('total_incidents', 0) - fatal
+                context['metric_split'] = f"{fatal} Fatal / {non_fatal} Non-Fatal"
+            else:
+                 # Fallbacks
+                context['metric_incidents'] = 0
+                context['metric_fatal'] = 0
+                context['metric_fatalities'] = 0
+                context['metric_ground'] = 0
+                context['metric_split'] = "0 Fatal / 0 Non-Fatal"
+
+            # 2. Top Aggregates (Aircraft)
+            resp_ac = requests.get(f"{api_base}/aggregates/top-n", params={**params, 'category': 'aircraft_type', 'n': 5}, timeout=10)
+            context['top_aircraft'] = json.dumps(resp_ac.json()) if resp_ac.status_code == 200 else "[]"
+
+            # 3. Top Aggregates (Operator)
+            resp_op = requests.get(f"{api_base}/aggregates/top-n", params={**params, 'category': 'operator', 'n': 5}, timeout=10)
+            context['top_operators'] = json.dumps(resp_op.json()) if resp_op.status_code == 200 else "[]"
+
+            # 4. Time Series (Line Chart)
+            resp_time = requests.get(f"{api_base}/aggregates/over-time", params={**params, 'period': 'month'}, timeout=10)
+            context['time_series'] = json.dumps(resp_time.json()) if resp_time.status_code == 200 else "[]"
+
+            # 5. Heatmap (Bubble Chart format)
+            # heatmap endpoint typically returns {dim1, dim2, count}
+            resp_heat = requests.get(f"{api_base}/aggregates/heatmap", params={**params, 'dimension1': 'phase', 'dimension2': 'aircraft_type'}, timeout=15)
+            context['heatmap'] = json.dumps(resp_heat.json()) if resp_heat.status_code == 200 else "[]"
+            
+            # 6. Hierarchy
+            resp_hier = requests.get(f"{api_base}/aggregates/hierarchy", params={**params}, timeout=15)
+            # Hierarchy endpoint might return a tree or list. 
+            # If list of {key, count}, it works directly with our template.
+            context['hierarchy'] = json.dumps(resp_hier.json()) if resp_hier.status_code == 200 else "[]"
+            
+            # 7. Data Table (Recent Incidents)
+            # Reusing classification results endpoint or similar to get list
+            resp_table = requests.get(f"{api_base}/classification-results", params={'skip': 0, 'limit': 10, 'evaluator_id': request.session.get('evaluator_id')}, timeout=10)
+            
+            if resp_table.status_code == 200:
+                # Transform response to match template expectations
+                # API returns list of {source_uid, origin_date, origin_operator, ...}
+                raw_data = resp_table.json()
+                table_data = []
+                for item in raw_data:
+                    table_data.append({
+                        "id": item.get('id'),
+                        "date": item.get('origin_date'),
+                        "operator": item.get('origin_operator'),
+                        "aircraft": item.get('origin_aircraft_type'),
+                        "phase": item.get('origin_phase'),
+                        "category": item.get('human_category') or item.get('llm_category') or 'UNK'
+                    })
+                context['table_data'] = table_data
+            else:
+                 context['table_data'] = []
+
+        except requests.RequestException as e:
+            messages.error(request, f"Error gathering dashboard data: {e}")
+            # Ensure context has defaults
+            context['metric_incidents'] = 0
+            context['top_aircraft'] = "[]"
+            context['top_operators'] = "[]"
+            context['time_series'] = "[]"
+            context['heatmap'] = "[]"
+            context['hierarchy'] = "[]"
+            context['table_data'] = []
+
+        return render(request, 'evaluation_app/dashboard.html', context)
+
+def dashboard_chart_data(request):
+    """
+    Proxy view to fetch interactive chart data from FastAPI
+    Params: classifications (list), phases (list), period (str)
+    """
+    api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
+    
+    # Get parameters
+    classifications = request.GET.getlist('classifications[]') # AJAX often sends arrays with []
+    if not classifications:
+         classifications = request.GET.getlist('classifications') # Standard GET
+         
+    phases = request.GET.getlist('phases[]')
+    if not phases:
+        phases = request.GET.getlist('phases')
+
+    period = request.GET.get('period', 'month')
+    
+    params = {'period': period}
+    if classifications: params['classifications'] = classifications
+    if phases: params['phases'] = phases
+    
+    try:
+        resp = requests.get(f"{api_base}/aggregates/classification-over-time", params=params, timeout=10)
+        if resp.status_code == 200:
+            from django.http import JsonResponse
+            return JsonResponse(resp.json(), safe=False)
+        else:
+            from django.http import JsonResponse
+            return JsonResponse({'error': f"API Error: {resp.text}"}, status=resp.status_code)
+    except Exception as e:
+        from django.http import JsonResponse
+        return JsonResponse({'error': str(e)}, status=500)

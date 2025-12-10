@@ -73,6 +73,37 @@
             font-size: 0.9rem;
             color: var(--cmu-black);
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 30px;
+            margin-left: 40px;
+            flex-grow: 1;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--cmu-black);
+            font-weight: 600;
+            padding: 22px 5px;
+            /* Match header height roughly for hit target, or just spacing */
+            border-bottom: 4px solid transparent;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .nav-link:hover {
+            color: var(--cmu-red);
+            background-color: rgba(196, 18, 48, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--cmu-red);
+            border-bottom-color: var(--cmu-red);
         }
 
         /* Default Container (for login, list views) */
@@ -217,13 +248,28 @@
 
     <header>
         <div class="header-left">
-            <img src="{% static 'evaluation_app/images/logo.svg' %}" alt="Safe AIr Logo"
-                style="height: 50px; margin-right: 15px;">
-            <div class="app-title">Safe AIr</div>
+            <a href="{% url 'dashboard' %}" class="d-flex align-items-center text-decoration-none">
+                <img src="{% static 'evaluation_app/images/logo.svg' %}" alt="Safe AIr Logo"
+                    style="height: 50px; margin-right: 15px;">
+                <div class="app-title">Safe AIr</div>
+            </a>
         </div>
+
+        <nav class="header-nav">
+            <a href="{% url 'dashboard' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'dashboard' or request.path == '/' %}active{% endif %}">Dashboard</a>
+            <a href="{% url 'task_list' %}"
+                class="nav-link {% if 'task' in request.resolver_match.url_name or 'evaluate' in request.resolver_match.url_name %}active{% endif %}">Evaluation</a>
+        </nav>
+
         <div class="header-right">
             {% if request.session.evaluator_id %}
             <span>Evaluator: <strong>{{ request.session.evaluator_id }}</strong></span>
+            <a href="{% url 'logout' %}" class="btn btn-secondary"
+                style="padding: 5px 15px; font-size: 0.85rem; margin-left: 10px;">Logout</a>
+            {% else %}
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn"
+                style="padding: 5px 15px; font-size: 0.85rem;">Login</a>
             {% endif %}
         </div>
     </header>

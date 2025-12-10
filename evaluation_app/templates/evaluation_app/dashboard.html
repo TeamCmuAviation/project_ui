@@ -1,0 +1,702 @@
+{% extends 'evaluation_app/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* Reset & Layout */
+    body {
+        overflow: hidden;
+        /* Prevent body scroll, handle in main-content */
+    }
+
+    .dashboard-container {
+        display: flex;
+        height: calc(100vh - 70px);
+        /* Subtract header height */
+        width: 100%;
+        overflow: hidden;
+    }
+
+    /* Fixed Sidebar */
+    .sidebar {
+        width: 250px;
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        flex-shrink: 0;
+        border-right: 1px solid #333;
+        overflow-y: auto;
+    }
+
+    .sidebar h5 {
+        color: var(--cmu-red);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 10px;
+    }
+
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-menu li {
+        margin-bottom: 10px;
+    }
+
+    .sidebar-menu a {
+        color: #aaaaaa;
+        text-decoration: none;
+        display: block;
+        padding: 10px 15px;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+
+    .sidebar-menu a:hover,
+    .sidebar-menu a.active {
+        background-color: rgba(196, 18, 48, 0.1);
+        color: var(--cmu-white);
+        border-left: 3px solid var(--cmu-red);
+    }
+
+    .sidebar-menu i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+
+    /* Main Content Area */
+    .main-content {
+        flex-grow: 1;
+        background-color: #f4f6f8;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    /* Key Metrics Cards */
+    .metrics-row {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .metric-card {
+        background: var(--cmu-white);
+        border-radius: 4px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border-top: 4px solid var(--cmu-black);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .metric-card.primary {
+        border-top-color: var(--cmu-red);
+    }
+
+    .metric-card.dark {
+        background: #222;
+        color: white;
+        border-top-color: var(--cmu-red);
+    }
+
+    .metric-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .metric-card.dark .metric-title {
+        color: #aaa;
+    }
+
+    .metric-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--cmu-black);
+    }
+
+    .metric-card.dark .metric-value {
+        color: white;
+    }
+
+    .metric-sub {
+        font-size: 0.75rem;
+        color: #888;
+        margin-top: 5px;
+    }
+
+    /* Chart Grid - 3x3 */
+    .chart-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr 1fr;
+        /* Small, Medium, Medium/Smallish */
+        grid-template-rows: repeat(3, auto);
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .card-panel {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #e0e0e0;
+    }
+
+    .panel-header {
+        padding: 12px 15px;
+        border-bottom: 1px solid #eee;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--cmu-black);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+    }
+
+    .panel-body {
+        padding: 15px;
+        flex-grow: 1;
+        min-height: 250px;
+        position: relative;
+    }
+
+    /* Specific Grid Areas */
+    .g-r1-c1 {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .g-r1-c2 {
+        grid-column: 2;
+        grid-row: 1;
+    }
+
+    .g-r1-c3 {
+        grid-column: 3;
+        grid-row: 1;
+    }
+
+    .g-r2-c1 {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .g-r2-c2 {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .g-r2-c3 {
+        grid-column: 3;
+        grid-row: 2;
+    }
+
+    .g-r3-c1 {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .g-r3-c2 {
+        grid-column: 2;
+        grid-row: 3;
+    }
+
+    /* Data Table */
+    .g-r3-c3 {
+        grid-column: 3;
+        grid-row: 3;
+    }
+
+    /* Data Table Styles */
+    .table-container {
+        overflow-x: auto;
+        font-size: 0.85rem;
+    }
+
+    .table thead th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid var(--cmu-red);
+        color: var(--cmu-black);
+        font-weight: 700;
+        padding: 10px;
+    }
+
+    .table td {
+        padding: 8px 10px;
+        vertical-align: middle;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* Layout Overrides for specific rows */
+    /* Merge R3-C1 and R3-C2 if needed, or keep distinct. Mockup implied table is wide. */
+    .g-r3-c2 {
+        grid-column: 2;
+    }
+
+    /* Keep as is for now */
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .chart-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .g-r1-c3 {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .dashboard-container {
+            flex-direction: column;
+            height: auto;
+            overflow: auto;
+        }
+
+        .sidebar {
+            width: 100%;
+            height: auto;
+        }
+
+        .chart-grid {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metrics-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block layout_wrapper %}
+<div class="dashboard-container">
+    <!-- Fixed Sidebar -->
+    <nav class="sidebar">
+        <h5><i class="fas fa-chart-line me-2"></i> Safety Analytics</h5>
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-filter"></i> Filetrics</a></li>
+            <li><a href="#"><i class="fas fa-exclamation-triangle"></i> Incidents</a></li>
+            <li><a href="#"><i class="fas fa-skull"></i> Fatal</a></li>
+            <li><a href="#"><i class="fas fa-book"></i> Procedures</a></li>
+            <li><a href="#"><i class="fas fa-plane"></i> Aircraft</a></li>
+            <li class="mt-4">
+                <hr style="border-color: #444;">
+            </li>
+            <li><a href="{% url 'task_list' %}"><i class="fas fa-clipboard-check"></i> Evaluation</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Key Metrics Cards -->
+        <div class="metrics-row">
+            <div class="metric-card primary">
+                <div class="metric-title">Total Incidents</div>
+                <div class="metric-value">{{ metric_incidents|default:"0" }}</div>
+                <div class="metric-sub"><i class="fas fa-arrow-up text-danger"></i> +5% this month</div>
+            </div>
+            <div class="metric-card dark">
+                <div class="metric-title">Fatal Incidents</div>
+                <div class="metric-value">{{ metric_fatal|default:"0" }}</div>
+                <div class="metric-sub">Critical Priority</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Total Fatalities</div>
+                <div class="metric-value">{{ metric_fatalities|default:"0" }}</div>
+                <div class="metric-sub">Across all regions</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Ground Incidents</div>
+                <div class="metric-value">{{ metric_ground|default:"0" }}</div>
+                <div class="metric-sub">Taxi/Ramp</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Severity Split</div>
+                <div class="metric-value" style="font-size: 1.1rem; line-height: 1.8rem;">
+                    {{ metric_split|default:"0 Fatal / 0 Non-Fatal" }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Grid (3x3) -->
+        <div class="chart-grid">
+            <div class="card-panel g-r1-c1">
+                <div class="panel-header" style="justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <span>Incidents Over Time</span>
+                    <div style="display: flex; gap: 8px;">
+                        <select id="timeFilterClass" class="form-select form-select-sm"
+                            style="width: auto; font-size: 0.8rem; padding: 2px 5px; height: 26px;">
+                            <option value="">All Classifications</option>
+                            {% for code, details in categories.items %}
+                            <option value="{{ code }}">{{ details.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="timeFilterPhase" class="form-select form-select-sm"
+                            style="width: auto; font-size: 0.8rem; padding: 2px 5px; height: 26px;">
+                            <option value="">All Phases</option>
+                            <option value="Landing">Landing</option>
+                            <option value="Takeoff">Takeoff</option>
+                            <option value="Cruise">Cruise</option>
+                            <option value="Approach">Approach</option>
+                            <option value="Taxi">Taxi</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <canvas id="timeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- R1 C2: Phase Breakdown (Using Top Aircraft Data as proxy for Phase in this mock) -->
+            <div class="card-panel g-r1-c2">
+                <div class="panel-header">Incidents by Category</div>
+                <div class="panel-body">
+                    <canvas id="phaseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- R1 C3: Top Aircraft (Vertical) -->
+            <div class="card-panel g-r1-c3">
+                <div class="panel-header">Top Aircraft Types</div>
+                <div class="panel-body">
+                    <canvas id="aircraftVertChart"></canvas>
+                </div>
+            </div>
+
+            <!-- R2 C1: Trend (Short Term) -->
+            <div class="card-panel g-r2-c1">
+                <div class="panel-header">Short-Term Trend</div>
+                <div class="panel-body">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- R2 C2: Top Operators (Horizontal) -->
+            <div class="card-panel g-r2-c2">
+                <div class="panel-header">Top 5 Operators</div>
+                <div class="panel-body">
+                    <canvas id="operatorChart"></canvas>
+                </div>
+            </div>
+
+            <!-- R2 C3: Heatmap Correlation -->
+            <div class="card-panel g-r2-c3">
+                <div class="panel-header">Phase vs Acft Correlation</div>
+                <div class="panel-body">
+                    <canvas id="heatmapChart"></canvas>
+                </div>
+            </div>
+
+            <!-- R3 C1: Footer/Aggregate -->
+            <div class="card-panel g-r3-c1" style="background: var(--cmu-red); color: white;">
+                <div
+                    class="panel-body d-flex flex-direction-column justify-content-center align-items-center text-center">
+                    <i class="fas fa-shield-alt fa-3x mb-3"></i>
+                    <h5>Safe AIr Verified</h5>
+                    <p class="small mb-0 opacity-75">Data integrity checks passed.</p>
+                </div>
+            </div>
+
+            <!-- R3 C2: Data Table -->
+            <div class="card-panel g-r3-c2">
+                <div class="panel-header">Recent Classification Results</div>
+                <div class="table-container p-0">
+                    <table class="table table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Operator</th>
+                                <th>Aircraft</th>
+                                <th>Phase</th>
+                                <th>Cat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in table_data %}
+                            <tr>
+                                <td>{{ item.date }}</td>
+                                <td>{{ item.operator }}</td>
+                                <td>{{ item.aircraft }}</td>
+                                <td>{{ item.phase }}</td>
+                                <td><span class="badge bg-secondary">{{ item.category }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- R3 C3: Hierarchical Dist -->
+            <div class="card-panel g-r3-c3">
+                <div class="panel-header">Incident Distribution</div>
+                <div class="panel-body">
+                    <canvas id="hierarchyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Chart.js Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // CMU Colors
+    const CMU_RED = '#C41230';
+    const CMU_BLACK = '#000000';
+    const CMU_GRAY = '#63666A';
+    const CMU_LIGHT_GRAY = '#E0E0E0';
+
+    // Mock Data from Views
+    const timeData = {{ time_series| safe }};
+    const aircraftData = {{ top_aircraft| safe }};
+    const operatorData = {{ top_operators| safe }};
+    const heatmapData = {{ heatmap| safe }};
+    const hierarchyData = {{ hierarchy| safe }};
+
+    // Helper: Parse Counts
+    const getLabels = (data, k = 'key') => data.map(d => d[k] || d.date || d.name);
+    const getValues = (data) => data.map(d => d.count || d.value);
+
+    // --- R1 C1: Time Series (Interactive) ---
+    const ctxTime = document.getElementById('timeChart').getContext('2d');
+
+    // Gradient
+    const gradTime = ctxTime.createLinearGradient(0, 0, 0, 400);
+    gradTime.addColorStop(0, 'rgba(196, 18, 48, 0.5)'); // CMU Red
+    gradTime.addColorStop(1, 'rgba(196, 18, 48, 0.0)');
+
+    let timeChartInstance = new Chart(ctxTime, {
+        type: 'line',
+        data: {
+            labels: getLabels(timeData),
+            datasets: [{
+                label: 'Incidents',
+                data: getValues(timeData),
+                borderColor: CMU_RED,
+                backgroundColor: gradTime,
+                tension: 0.4, // Smooth curves
+                fill: true,
+                pointRadius: 3,
+                pointHoverRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 10 } }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#eee' }
+                }
+            }
+        }
+    });
+
+    // AJAX Handling for Time Chart
+    const fetchTimeData = async () => {
+        const cls = document.getElementById('timeFilterClass').value;
+        const phase = document.getElementById('timeFilterPhase').value;
+
+        // Build Params
+        const params = new URLSearchParams();
+        params.append('period', 'month'); // Default
+        if (cls) params.append('classifications[]', cls);
+        if (phase) params.append('phases[]', phase);
+
+        try {
+            const resp = await fetch(`/dashboard/api/chart-data/?${params.toString()}`);
+            if (!resp.ok) throw new Error('API Error');
+            const data = await resp.json();
+
+            // Update Chart
+            timeChartInstance.data.labels = getLabels(data);
+            timeChartInstance.data.datasets[0].data = getValues(data);
+            timeChartInstance.update();
+
+        } catch (e) {
+            console.error("Chart Update Failed", e);
+        }
+    };
+
+    // Listeners
+    document.getElementById('timeFilterClass').addEventListener('change', fetchTimeData);
+    document.getElementById('timeFilterPhase').addEventListener('change', fetchTimeData);
+
+    // --- R1 C2: Phase (Bar) ---
+    // Using Mock Aircraft data as proxy for categories just to show diff chart
+    new Chart(document.getElementById('phaseChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Landing', 'Takeoff', 'Cruise', 'Taxi', 'Approach'],
+            datasets: [{
+                label: 'Incidents',
+                data: [45, 30, 25, 15, 10],
+                backgroundColor: CMU_BLACK,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { display: false, grid: { display: false } } }
+        }
+    });
+
+    // --- R1 C3: Top Aircraft (Vert Bar) ---
+    new Chart(document.getElementById('aircraftVertChart'), {
+        type: 'bar',
+        data: {
+            labels: getLabels(aircraftData),
+            datasets: [{
+                label: 'Incidents',
+                data: getValues(aircraftData),
+                backgroundColor: CMU_RED,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false } } // Minimal x labels
+        }
+    });
+
+    // --- R2 C1: Trend (Line - distinct style) ---
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: getLabels(timeData),
+            datasets: [{
+                label: 'Trend',
+                data: getValues(timeData).map(v => v * 1.1), // Slight var
+                borderColor: CMU_BLACK,
+                borderDash: [5, 5],
+                pointRadius: 2,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } }
+        }
+    });
+
+    // --- R2 C2: Operators (Horiz Bar) ---
+    new Chart(document.getElementById('operatorChart'), {
+        type: 'bar',
+        data: {
+            labels: getLabels(operatorData),
+            datasets: [{
+                label: 'Incidents',
+                data: getValues(operatorData),
+                backgroundColor: CMU_GRAY,
+                borderRadius: 4,
+                barThickness: 20
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false } }
+        }
+    });
+
+    // --- R2 C3: Heatmap (Bubble) ---
+    const heatLabelsX = [...new Set(heatmapData.map(d => d.dim1))];
+    const heatLabelsY = [...new Set(heatmapData.map(d => d.dim2))];
+    const bubbleData = heatmapData.map(d => ({
+        x: heatLabelsX.indexOf(d.dim1),
+        y: heatLabelsY.indexOf(d.dim2),
+        r: Math.sqrt(d.count) * 4
+    }));
+
+    new Chart(document.getElementById('heatmapChart'), {
+        type: 'bubble',
+        data: {
+            datasets: [{
+                label: 'Correlation',
+                data: bubbleData,
+                backgroundColor: 'rgba(196, 18, 48, 0.7)',
+                borderColor: CMU_RED
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: {
+                    ticks: { callback: v => heatLabelsX[v] },
+                    min: -0.5, max: heatLabelsX.length - 0.5
+                },
+                y: {
+                    ticks: { callback: v => heatLabelsY[v] },
+                    min: -0.5, max: heatLabelsY.length - 0.5
+                }
+            }
+        }
+    });
+
+    // --- R3 C3: Hierarchy (Doughnut) ---
+    new Chart(document.getElementById('hierarchyChart'), {
+        type: 'doughnut',
+        data: {
+            labels: getLabels(hierarchyData),
+            datasets: [{
+                data: getValues(hierarchyData),
+                backgroundColor: [CMU_RED, CMU_BLACK, '#444', '#888', '#ccc'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } }
+            },
+            cutout: '70%'
+        }
+    });
+
+</script>
+{% endblock %}
+{% block content %}{% endblock %}
