@@ -863,3 +863,161 @@ def dashboard_risk_heatmap_data(request):
     except Exception as e:
         from django.http import JsonResponse
         return JsonResponse({'error': str(e)}, status=500)
+
+# -------------------------------------------------------------------------
+# Report Generator View (LangChain Integration)
+# -------------------------------------------------------------------------
+try:
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    from langchain_core.prompts import PromptTemplate
+    from langchain_core.output_parsers import JsonOutputParser
+    LANGCHAIN_AVAILABLE = True
+except ImportError:
+    LANGCHAIN_AVAILABLE = False
+
+class ReportGeneratorView(View):
+    template_name = 'evaluation_app/report_generator.html'
+
+    def get(self, request):
+        # Fetch Top 100 Operators for dropdown
+        try:
+            resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/top-n?category=operator&n=100")
+            operators = [d['category_value'] for d in resp.json()] if resp.ok else []
+        except:
+            operators = []
+        
+        return render(request, self.template_name, {'operators': sorted(operators)})
+
+    def post(self, request):
+        context_type = request.POST.get('context_type')
+        operator = request.POST.get('operator')
+        location = request.POST.get('location')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        # 1. Determine Context & Build Filters
+        filters = {}
+        chart_data = {}
+        report_title = "Safety Report"
+        
+        if context_type == 'OPERATOR' and operator:
+            filters['operator'] = operator
+            report_title = f"Safety Report: {operator}"
+            # Fetch Charts for Operator
+            try:
+                # Chart 1: Time Series
+                t_resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/over-time?operator={operator}")
+                chart_data['time_series'] = t_resp.json() if t_resp.ok else []
+                # Chart 2: Top Phases
+                p_resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/top-n?category=phase&operator={operator}")
+                chart_data['top_n_1'] = p_resp.json() if p_resp.ok else []
+            except:
+                pass
+
+        elif context_type == 'LOCATION' and location:
+            filters['location'] = location
+            report_title = f"Safety Report: {location}"
+            # Fetch Charts for Location
+            try:
+                # Chart 1: Time Series
+                t_resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/over-time?location={location}")
+                chart_data['time_series'] = t_resp.json() if t_resp.ok else []
+                # Chart 2: Top Categories
+                c_resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/top-n?category=final_category&location={location}")
+                chart_data['top_n_1'] = c_resp.json() if c_resp.ok else []
+            except:
+                pass
+
+        # 2. Fetch Raw Narratives for LLM
+        narratives = []
+        try:
+            # Using existing classified-detailed endpoint as proxy for 'bulk'
+            # In real scenario, we'd want a dedicated bulk endpoint or limit this
+            # Note: We need a way to filter by operator/location on this endpoint
+            # Assuming GET /incidents/classified-detailed supports filters
+            
+            # Construct Query String
+            query_params = []
+            if 'operator' in filters: query_params.append(f"operator={filters['operator']}")
+            if 'location' in filters: query_params.append(f"location={filters['location']}")
+            query_str = "&".join(query_params)
+            
+            narr_url = f"{settings.FASTAPI_BASE_URL}/incidents/classified-detailed?limit=20&{query_str}"
+            narr_resp = requests.get(narr_url)
+            if narr_resp.ok:
+                # Extract summary/narrative text
+                # Try to get narrative from API response schema. Usually it is in mixed list.
+                # Adapting to response structure: List of dicts
+                narratives = []
+                for item in narr_resp.json():
+                    # Check keys as they might vary
+                    text = item.get('summary') or item.get('narrative') or item.get('description') or ""
+                    if text:
+                        narratives.append(f"Incident {item.get('id', '?')}: {text[:500]}...") # Truncate for token limit
+                
+                narratives = narratives[:15] # Limit context window further
+        except Exception as e:
+            print(f"Narrative fetch error: {e}")
+
+        # 3. LLM Synthesis (LangChain)
+        report_data = {
+            "executive_summary": "LLM generation unavailable (LangChain/Gemini not configured).",
+            "risk_exposure_narrative": "Please install langchain-google-genai and set GOOGLE_API_KEY.",
+            "critical_factors_narrative": "...",
+            "recommendations_narrative": "..."
+        }
+
+        if LANGCHAIN_AVAILABLE and narratives:
+            try:
+                # Initialize Gemini
+                # Note: Requires GOOGLE_API_KEY in env variables
+                llm = ChatGoogleGenerativeAI(model="gemini-pro")
+
+                parser = JsonOutputParser()
+                
+                template = """
+                You are an expert Aviation Safety Analyst. Analyze the following incident data for: {title}.
+                
+                DATA CONTEXT:
+                {narratives}
+                
+                Synthesize a professional safety report. OUTPUT MUST BE A SINGLE VALID JSON OBJECT.
+                {format_instructions}
+                
+                Focus on systemic factors and provide actionable recommendations.
+                """
+                
+                prompt = PromptTemplate(
+                    template=template,
+                    input_variables=["title", "narratives"],
+                    partial_variables={"format_instructions": parser.get_format_instructions()}
+                )
+                
+                chain = prompt | llm | parser
+                
+                result = chain.invoke({
+                    "title": report_title, 
+                    "narratives": "\n".join(narratives)
+                })
+                
+                # Merge result into report_data (handling potential partial keys)
+                if isinstance(result, dict):
+                    report_data.update(result)
+                
+            except Exception as e:
+                print(f"LLM Error: {e}")
+                report_data["executive_summary"] = f"Error generating report: {str(e)}"
+
+        # Re-fetch operators for the dropdown in the response
+        try:
+            op_resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/top-n?category=operator&n=100")
+            operators = [d['category_value'] for d in op_resp.json()] if op_resp.ok else []
+        except:
+            operators = []
+
+        return render(request, self.template_name, {
+            'report_data': report_data,
+            'report_title': report_title,
+            'chart_data': chart_data,
+            'operators': sorted(operators)
+        })

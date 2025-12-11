@@ -1,0 +1,203 @@
+{% extends 'evaluation_app/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="text-uppercase" style="border-left: 5px solid var(--cmu-red); padding-left: 15px;">Safety Report
+            Generator</h2>
+        <p class="text-muted">Generate comprehensive safety analysis reports using AI-driven synthesis of incident data.
+        </p>
+    </div>
+</div>
+
+<!-- Input Form -->
+<div class="card-panel mb-4">
+    <div class="panel-header">Report Configuration</div>
+    <div class="panel-body">
+        <form id="reportForm" method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-3">
+                    <label>Context Type</label>
+                    <select id="contextType" name="context_type" class="form-control" onchange="toggleContextInput()">
+                        <option value="OPERATOR">By Operator</option>
+                        <option value="LOCATION">By Location</option>
+                    </select>
+                </div>
+                <!-- Operator Select -->
+                <div class="col-md-3" id="operatorGroup">
+                    <label>Operator</label>
+                    <select name="operator" class="form-control select2">
+                        <option value="">Select Operator...</option>
+                        {% for op in operators %}
+                        <option value="{{ op }}">{{ op }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Location Select (Hidden initially) -->
+                <div class="col-md-3" id="locationGroup" style="display: none;">
+                    <label>Location (ICAO)</label>
+                    <input type="text" name="location" class="form-control" placeholder="e.g. KJFK">
+                </div>
+                <div class="col-md-4">
+                    <label>Date Range (Optional)</label>
+                    <div class="d-flex">
+                        <input type="month" name="start_date" class="form-control mr-2">
+                        <input type="month" name="end_date" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-magic mr-2"></i> Generate
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Loading State -->
+<div id="reportLoader" style="display: none; text-align: center; padding: 50px;">
+    <div class="spinner"></div>
+    <h4 class="mt-3" style="color: var(--cmu-red);">Synthesizing Safety Report...</h4>
+    <p class="text-muted">Analyzing incident narratives and generating insights.</p>
+</div>
+
+<!-- Output Section -->
+{% if report_data %}
+<div id="reportOutput">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>{{ report_title }}</h3>
+        <button onclick="window.print()" class="btn btn-secondary">
+            <i class="fas fa-file-pdf mr-2"></i> Export PDF
+        </button>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="card-panel mb-4" style="border-left: 5px solid var(--cmu-red);">
+        <div class="panel-body">
+            <h5>Executive Summary</h5>
+            <p>{{ report_data.executive_summary }}</p>
+        </div>
+    </div>
+
+    <!-- Visualizations Row -->
+    <div class="row mb-4">
+        {% if chart_data.time_series %}
+        <div class="col-md-6">
+            <div class="card-panel">
+                <div class="panel-header">Incident Trend</div>
+                <div class="panel-body" style="height: 300px;">
+                    <canvas id="chartTime"></canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if chart_data.top_n_1 %}
+        <div class="col-md-6">
+            <div class="card-panel">
+                <div class="panel-header">Top Factors</div>
+                <div class="panel-body" style="height: 300px;">
+                    <canvas id="chartTopN1"></canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Detailed Narratives -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card-panel h-100">
+                <div class="panel-header">Risk Exposure Analysis</div>
+                <div class="panel-body">
+                    <p>{{ report_data.risk_exposure_narrative }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-panel h-100">
+                <div class="panel-header">Critical Systemic Factors</div>
+                <div class="panel-body">
+                    <p>{{ report_data.critical_factors_narrative }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="card-panel mt-4">
+        <div class="panel-header">Safety Recommendations</div>
+        <div class="panel-body">
+            <p>{{ report_data.recommendations_narrative }}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    $(document).ready(function () {
+        $('.select2').select2();
+
+        $('#reportForm').on('submit', function () {
+            $('#reportLoader').show();
+            // Allow form submission to proceed
+        });
+    });
+
+    function toggleContextInput() {
+        const type = document.getElementById('contextType').value;
+        if (type === 'OPERATOR') {
+            document.getElementById('operatorGroup').style.display = 'block';
+            document.getElementById('locationGroup').style.display = 'none';
+        } else {
+            document.getElementById('operatorGroup').style.display = 'none';
+            document.getElementById('locationGroup').style.display = 'block';
+        }
+    }
+
+    // Chart Initialization if data exists
+    {% if chart_data %}
+    const timeData = {{ chart_data.time_series| safe }};
+    const topN1Data = {{ chart_data.top_n_1| safe }};
+
+    if (timeData) {
+        new Chart(document.getElementById('chartTime'), {
+            type: 'line',
+            data: {
+                labels: timeData.map(d => d.date || d.key),
+                datasets: [{
+                    label: 'Incidents',
+                    data: timeData.map(d => d.count || d.value),
+                    borderColor: '#C41230',
+                    backgroundColor: 'rgba(196, 18, 48, 0.1)',
+                    fill: true
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+
+    if (topN1Data) {
+        new Chart(document.getElementById('chartTopN1'), {
+            type: 'bar',
+            data: {
+                labels: topN1Data.map(d => d.category_value || d.key),
+                datasets: [{
+                    label: 'Incidents',
+                    data: topN1Data.map(d => d.incident_count || d.value),
+                    backgroundColor: '#000000'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+    {% endif %}
+</script>
+{% endblock %}

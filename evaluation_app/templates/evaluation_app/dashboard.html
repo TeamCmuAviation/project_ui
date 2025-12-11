@@ -324,11 +324,6 @@
                             <select id="timeFilterPhase" class="form-select form-select-sm"
                                 style="width: auto; font-size: 0.8rem; padding: 2px 5px; height: 26px;">
                                 <option value="">All Phases</option>
-                                <option value="Landing">Landing</option>
-                                <option value="Takeoff">Takeoff</option>
-                                <option value="Cruise">Cruise</option>
-                                <option value="Approach">Approach</option>
-                                <option value="Taxi">Taxi</option>
                             </select>
                             <button id="btnReloadTime" class="btn btn-sm btn-outline-secondary" title="Update Chart"
                                 style="height: 26px; padding: 0 8px;">
@@ -945,6 +940,22 @@
             // Format: [{ "category_value": "Cruise", "incident_count": 150 }, ...]
             const labels = data.map(d => d.category_value || d.key);
             const values = data.map(d => d.incident_count || d.value);
+
+            // Populate Time Chart Phase Filter dynamically
+            const phaseDropdown = document.getElementById('timeFilterPhase');
+            if (phaseDropdown) {
+                const currentVal = phaseDropdown.value;
+                phaseDropdown.innerHTML = '<option value="">All Phases</option>';
+                labels.forEach(label => {
+                    const opt = document.createElement('option');
+                    opt.value = label;
+                    opt.innerText = label;
+                    phaseDropdown.appendChild(opt);
+                });
+                if (labels.includes(currentVal)) {
+                    phaseDropdown.value = currentVal;
+                }
+            }
 
             const ctx = document.getElementById('flightPhaseChart');
             if (!ctx) return;

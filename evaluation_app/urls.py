@@ -15,7 +15,8 @@ from .views import (
     dashboard_phase_data,
     dashboard_aircraft_data,
     dashboard_seasonality_data,
-    dashboard_risk_heatmap_data
+    dashboard_risk_heatmap_data,
+    ReportGeneratorView
 )
 
 urlpatterns = [
@@ -35,4 +36,5 @@ urlpatterns = [
     path('tasks/', TaskListView.as_view(), name='task_list'),
     path('evaluate/<str:uid>/', EvaluationInterfaceView.as_view(), name='evaluate'),
     path('random/', random_task, name='random_task'),
+    path('reports/generate/', ReportGeneratorView.as_view(), name='report_generator'),
 ]
