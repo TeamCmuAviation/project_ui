@@ -501,21 +501,7 @@
                     </div>
                 </div>
 
-                <!-- Heatmap -->
-                <div class="card-panel">
-                    <div class="panel-header">Phase vs Acft Correlation</div>
-                    <div class="panel-body" style="height: 300px; position: relative;">
-                        <canvas id="heatmapChart" style="width: 100%; height: 100%; display: block;"></canvas>
-                    </div>
-                </div>
 
-                <!-- Incident Distribution -->
-                <div class="card-panel">
-                    <div class="panel-header">Incident Distribution</div>
-                    <div class="panel-body" style="height: 300px; position: relative;">
-                        <canvas id="hierarchyChart" style="width: 100%; height: 100%; display: block;"></canvas>
-                    </div>
-                </div>
             </div>
         </div>
     </main>
@@ -536,8 +522,6 @@
     const timeData = {{ time_series| safe }};
     const aircraftData = {{ top_aircraft| safe }};
     const operatorData = {{ top_operators| safe }};
-    const heatmapData = {{ heatmap| safe }};
-    const hierarchyData = {{ hierarchy| safe }};
     const categoryData = {{ incidents_by_category| safe }};
 
     // Helper: Parse Counts
