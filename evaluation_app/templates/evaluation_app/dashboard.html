@@ -398,6 +398,18 @@
                     </div>
                 </div>
 
+                <!-- Seasonal Trends (Heatmap) - New Row (Nested) -->
+                <div class="row mt-3">
+                    <div class="col-md-6"> <!-- 50% Width -->
+                        <div class="card-panel">
+                            <div class="panel-header">Seasonal Trends (Month vs Year)</div>
+                            <div class="panel-body" style="height: 300px; position: relative;">
+                                <canvas id="seasonalChart" style="width: 100%; height: 100%; display: block;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Footer/Aggregate -->
                 <div class="card-panel" style="background: var(--cmu-red); color: white;">
                     <div
@@ -494,6 +506,7 @@
 
 <!-- Chart.js Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.1.1/dist/chartjs-chart-matrix.min.js"></script>
 
 <script>
     // CMU Colors
@@ -671,125 +684,8 @@
     document.getElementById('catStart').addEventListener('change', fetchCategoryData);
     document.getElementById('catEnd').addEventListener('change', fetchCategoryData);
 
-    // Static Charts Wrapper
-    try {
-        // --- R1 C3: Top Aircraft (Vert Bar) ---
-        new Chart(document.getElementById('aircraftVertChart'), {
-            type: 'bar',
-            data: {
-                labels: getLabels(aircraftData),
-                datasets: [{
-                    label: 'Incidents',
-                    data: getValues(aircraftData),
-                    backgroundColor: CMU_RED,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { x: { display: false } }
-            }
-        });
-
-        // --- R2 C1: Trend (Line - distinct style) ---
-        new Chart(document.getElementById('trendChart'), {
-            type: 'line',
-            data: {
-                labels: getLabels(timeData),
-                datasets: [{
-                    label: 'Trend',
-                    data: getValues(timeData).map(v => v * 1.1),
-                    borderColor: CMU_BLACK,
-                    borderDash: [5, 5],
-                    pointRadius: 2,
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { x: { display: false }, y: { display: false } }
-            }
-        });
-
-        // --- R2 C2: Operators (Horiz Bar) ---
-        new Chart(document.getElementById('operatorChart'), {
-            type: 'bar',
-            data: {
-                labels: getLabels(operatorData),
-                datasets: [{
-                    label: 'Incidents',
-                    data: getValues(operatorData),
-                    backgroundColor: CMU_GRAY,
-                    borderRadius: 4,
-                    barThickness: 20
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { x: { display: false } }
-            }
-        });
-
-        // --- R2 C3: Heatmap (Bubble) ---
-        // Validate Data first
-        if (heatmapData && heatmapData.length) {
-            const heatLabelsX = [...new Set(heatmapData.map(d => d.dim1))];
-            const heatLabelsY = [...new Set(heatmapData.map(d => d.dim2))];
-            const bubbleData = heatmapData.map(d => ({
-                x: heatLabelsX.indexOf(d.dim1),
-                y: heatLabelsY.indexOf(d.dim2),
-                r: Math.sqrt(d.count) * 4
-            }));
-
-            new Chart(document.getElementById('heatmapChart'), {
-                type: 'bubble',
-                data: {
-                    datasets: [{
-                        label: 'Correlation',
-                        data: bubbleData,
-                        backgroundColor: 'rgba(196, 18, 48, 0.7)',
-                        borderColor: CMU_RED
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { ticks: { callback: v => heatLabelsX[v] }, min: -0.5, max: heatLabelsX.length - 0.5 },
-                        y: { ticks: { callback: v => heatLabelsY[v] }, min: -0.5, max: heatLabelsY.length - 0.5 }
-                    }
-                }
-            });
-        }
-
-        // --- R3 C3: Hierarchy (Doughnut) ---
-        new Chart(document.getElementById('hierarchyChart'), {
-            type: 'doughnut',
-            data: {
-                labels: getLabels(hierarchyData),
-                datasets: [{
-                    data: getValues(hierarchyData),
-                    backgroundColor: [CMU_RED, CMU_BLACK, '#444', '#888', '#ccc'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } },
-                cutout: '70%'
-            }
-        });
-
-    } catch (e) { console.error("Static Charts Init Failed", e); }
+    // Static Charts Wrapper - Removed Legacy Charts
+    // All charts are now dynamic and initialized in their respective fetch functions.
 
     // --- MAP & LOCATION BAR CHART ---
 
@@ -1138,6 +1034,95 @@
         }
     };
 
+    // I. Seasonal Chart (Heatmap)
+    const fetchSeasonalData = async () => {
+        // Use backend filtering as requested
+        const url = "/dashboard/api/seasonality-data/?start_year=2000&end_year=2025";
+        toggleLoading('seasonalChart', true);
+
+        try {
+            const resp = await fetch(url);
+            const data = await resp.json();
+
+            // Expected Backend Format: [{"x": "Jan", "y": "2023", "v": 120}, ...]
+            // No client-side aggregation needed!
+
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const years = new Set();
+            let maxVal = 0;
+
+            const matrixData = [];
+            data.forEach(d => {
+                const count = d.v || d.count || d.value || 0;
+                if (count > maxVal) maxVal = count;
+                years.add(d.y);
+                matrixData.push({
+                    x: d.x, // Month Name
+                    y: d.y, // Year
+                    v: count
+                });
+            });
+
+            const sortedYears = Array.from(years).sort();
+
+            const ctx = document.getElementById('seasonalChart');
+            if (!ctx) return;
+
+            if (window.seasonalChartInstance) window.seasonalChartInstance.destroy();
+
+            window.seasonalChartInstance = new Chart(ctx, {
+                type: 'matrix',
+                data: {
+                    datasets: [{
+                        label: 'Incidents',
+                        data: matrixData,
+                        backgroundColor(c) {
+                            const value = c.raw.v;
+                            const alpha = (value / maxVal) || 0;
+                            return `rgba(196, 18, 48, ${Math.max(0.1, alpha)})`; // CMU Red scale
+                        },
+                        width: ({ chart }) => (chart.chartArea || {}).width / 12 - 1,
+                        height: ({ chart }) => (chart.chartArea || {}).height / (sortedYears.length || 1) - 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title() { return ''; },
+                                label(context) {
+                                    const v = context.raw;
+                                    return `${v.x} ${v.y}: ${v.v} Incidents`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'category',
+                            labels: months,
+                            grid: { display: false }
+                        },
+                        y: {
+                            type: 'category',
+                            labels: sortedYears,
+                            offset: true,
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+        } catch (e) {
+            console.error("Seasonal Fetch Failed", e);
+        } finally {
+            toggleLoading('seasonalChart', false);
+        }
+    };
+
     // Initial Calls
     fetchAircraftData();
     fetchPhaseData(); // Already called in previous block but good to ensure order
@@ -1172,6 +1157,7 @@
     fetchTableData();
     fetchOperatorData();
     fetchPhaseData();
+    fetchSeasonalData();
 </script>
 {% endblock %}
 {% block content %}{% endblock %}

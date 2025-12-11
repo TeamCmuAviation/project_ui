@@ -1,0 +1,1756 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/airports": {
+      "get": {
+        "summary": "Get Airports",
+        "operationId": "get_airports_airports_get",
+        "parameters": [
+          {
+            "name": "codes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Codes"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/classification-results": {
+      "get": {
+        "summary": "Get Classification Results",
+        "operationId": "get_classification_results_classification_results_get",
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "evaluator_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Evaluator Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Get Classification Results Classification Results Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/full_classification_results_bulk": {
+      "post": {
+        "summary": "Get Full Classification Results Bulk",
+        "operationId": "get_full_classification_results_bulk_full_classification_results_bulk_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "title": "Uids"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incidents/classified-detailed": {
+      "get": {
+        "summary": "Get Classified Incidents With Details",
+        "description": "Retrieves a paginated list of the most recent classified incidents, including\nkey details like date, operator, phase, aircraft type, and final classification.",
+        "operationId": "get_classified_incidents_with_details_incidents_classified_detailed_get",
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of records to skip for pagination.",
+              "default": 0,
+              "title": "Skip"
+            },
+            "description": "Number of records to skip for pagination."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "exclusiveMinimum": 0,
+              "description": "Maximum number of records to return.",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Maximum number of records to return."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aggregates/over-time": {
+      "get": {
+        "summary": "Get Aggregates Over Time",
+        "description": "Provides aggregated incident counts over time (by year or month).\nThis is useful for creating time-series visualizations.\n\nThe endpoint supports filtering by:\n- `operators`\n- `phases`\n- `aircraft_types`",
+        "operationId": "get_aggregates_over_time_aggregates_over_time_get",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "year",
+                "month"
+              ],
+              "type": "string",
+              "description": "The time period to group by ('year' or 'month').",
+              "default": "month",
+              "title": "Period"
+            },
+            "description": "The time period to group by ('year' or 'month')."
+          },
+          {
+            "name": "operators",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more operators.",
+              "title": "Operators"
+            },
+            "description": "Filter by one or more operators."
+          },
+          {
+            "name": "phases",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more flight phases.",
+              "title": "Phases"
+            },
+            "description": "Filter by one or more flight phases."
+          },
+          {
+            "name": "aircraft_types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more aircraft types.",
+              "title": "Aircraft Types"
+            },
+            "description": "Filter by one or more aircraft types."
+          },
+          {
+            "name": "locations",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more locations (ICAO codes).",
+              "title": "Locations"
+            },
+            "description": "Filter by one or more locations (ICAO codes)."
+          },
+          {
+            "name": "start_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start period in YYYY-MM format.",
+              "title": "Start Period"
+            },
+            "description": "Start period in YYYY-MM format."
+          },
+          {
+            "name": "end_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End period in YYYY-MM format.",
+              "title": "End Period"
+            },
+            "description": "End period in YYYY-MM format."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aggregates/top-n": {
+      "get": {
+        "summary": "Get Top N Aggregates",
+        "description": "Provides a list of the top N most frequent items for a given category,\nsuch as 'operator', 'aircraft_type', 'phase', or 'final_category'.",
+        "operationId": "get_top_n_aggregates_aggregates_top_n_get",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "operator",
+                "aircraft_type",
+                "phase",
+                "final_category",
+                "location"
+              ],
+              "type": "string",
+              "description": "The category to aggregate.",
+              "title": "Category"
+            },
+            "description": "The category to aggregate."
+          },
+          {
+            "name": "n",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "exclusiveMinimum": 0,
+              "description": "The number of top results to return.",
+              "default": 10,
+              "title": "N"
+            },
+            "description": "The number of top results to return."
+          },
+          {
+            "name": "operators",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more operators.",
+              "title": "Operators"
+            },
+            "description": "Filter by one or more operators."
+          },
+          {
+            "name": "phases",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more flight phases.",
+              "title": "Phases"
+            },
+            "description": "Filter by one or more flight phases."
+          },
+          {
+            "name": "aircraft_types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more aircraft types.",
+              "title": "Aircraft Types"
+            },
+            "description": "Filter by one or more aircraft types."
+          },
+          {
+            "name": "locations",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more locations (ICAO codes).",
+              "title": "Locations"
+            },
+            "description": "Filter by one or more locations (ICAO codes)."
+          },
+          {
+            "name": "start_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start period in YYYY-MM format.",
+              "title": "Start Period"
+            },
+            "description": "Start period in YYYY-MM format."
+          },
+          {
+            "name": "end_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End period in YYYY-MM format.",
+              "title": "End Period"
+            },
+            "description": "End period in YYYY-MM format."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aggregates/classification-over-time": {
+      "get": {
+        "summary": "Get Classification Aggregates Over Time",
+        "description": "Provides aggregated time-series data for classification results,\nsupporting filtering by classification, phase, location, and aircraft type.",
+        "operationId": "get_classification_aggregates_over_time_aggregates_classification_over_time_get",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "year",
+                "month"
+              ],
+              "type": "string",
+              "description": "The time period to group by ('year' or 'month').",
+              "default": "month",
+              "title": "Period"
+            },
+            "description": "The time period to group by ('year' or 'month')."
+          },
+          {
+            "name": "final_categories",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more final classification categories.",
+              "title": "Final Categories"
+            },
+            "description": "Filter by one or more final classification categories."
+          },
+          {
+            "name": "phases",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more flight phases.",
+              "title": "Phases"
+            },
+            "description": "Filter by one or more flight phases."
+          },
+          {
+            "name": "locations",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more locations (ICAO codes).",
+              "title": "Locations"
+            },
+            "description": "Filter by one or more locations (ICAO codes)."
+          },
+          {
+            "name": "aircraft_types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more aircraft types.",
+              "title": "Aircraft Types"
+            },
+            "description": "Filter by one or more aircraft types."
+          },
+          {
+            "name": "start_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start period in YYYY-MM format.",
+              "title": "Start Period"
+            },
+            "description": "Start period in YYYY-MM format."
+          },
+          {
+            "name": "end_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End period in YYYY-MM format.",
+              "title": "End Period"
+            },
+            "description": "End period in YYYY-MM format."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/incidents/locations": {
+      "get": {
+        "summary": "Get Incident Locations",
+        "description": "Provides a list of incidents with their geographic coordinates, suitable for map visualizations.\nIt supports filtering by a date range.",
+        "operationId": "get_incident_locations_incidents_locations_get",
+        "parameters": [
+          {
+            "name": "operators",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more operators.",
+              "title": "Operators"
+            },
+            "description": "Filter by one or more operators."
+          },
+          {
+            "name": "phases",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more flight phases.",
+              "title": "Phases"
+            },
+            "description": "Filter by one or more flight phases."
+          },
+          {
+            "name": "aircraft_types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more aircraft types.",
+              "title": "Aircraft Types"
+            },
+            "description": "Filter by one or more aircraft types."
+          },
+          {
+            "name": "start_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start period in YYYY-MM format.",
+              "title": "Start Period"
+            },
+            "description": "Start period in YYYY-MM format."
+          },
+          {
+            "name": "end_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End period in YYYY-MM format.",
+              "title": "End Period"
+            },
+            "description": "End period in YYYY-MM format."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aggregates/hierarchy": {
+      "get": {
+        "summary": "Get Hierarchy Aggregates",
+        "description": "Provides data grouped by operator, aircraft_type, and phase, suitable for\nhierarchical visualizations like sunburst or treemap charts.",
+        "operationId": "get_hierarchy_aggregates_aggregates_hierarchy_get",
+        "parameters": [
+          {
+            "name": "operators",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more operators.",
+              "title": "Operators"
+            },
+            "description": "Filter by one or more operators."
+          },
+          {
+            "name": "phases",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more flight phases.",
+              "title": "Phases"
+            },
+            "description": "Filter by one or more flight phases."
+          },
+          {
+            "name": "aircraft_types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more aircraft types.",
+              "title": "Aircraft Types"
+            },
+            "description": "Filter by one or more aircraft types."
+          },
+          {
+            "name": "locations",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more locations (ICAO codes).",
+              "title": "Locations"
+            },
+            "description": "Filter by one or more locations (ICAO codes)."
+          },
+          {
+            "name": "start_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start period in YYYY-MM format.",
+              "title": "Start Period"
+            },
+            "description": "Start period in YYYY-MM format."
+          },
+          {
+            "name": "end_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End period in YYYY-MM format.",
+              "title": "End Period"
+            },
+            "description": "End period in YYYY-MM format."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aggregates/locations-over-time": {
+      "get": {
+        "summary": "Get Locations Over Time Aggregates",
+        "description": "Provides aggregated incident counts per location, grouped by month.\nThis is a more performant alternative to /incidents/locations for heatmap-style time-series visualizations.",
+        "operationId": "get_locations_over_time_aggregates_aggregates_locations_over_time_get",
+        "parameters": [
+          {
+            "name": "operators",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more operators.",
+              "title": "Operators"
+            },
+            "description": "Filter by one or more operators."
+          },
+          {
+            "name": "phases",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more flight phases.",
+              "title": "Phases"
+            },
+            "description": "Filter by one or more flight phases."
+          },
+          {
+            "name": "aircraft_types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more aircraft types.",
+              "title": "Aircraft Types"
+            },
+            "description": "Filter by one or more aircraft types."
+          },
+          {
+            "name": "locations",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more locations (ICAO codes).",
+              "title": "Locations"
+            },
+            "description": "Filter by one or more locations (ICAO codes)."
+          },
+          {
+            "name": "start_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start period in YYYY-MM format.",
+              "title": "Start Period"
+            },
+            "description": "Start period in YYYY-MM format."
+          },
+          {
+            "name": "end_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End period in YYYY-MM format.",
+              "title": "End Period"
+            },
+            "description": "End period in YYYY-MM format."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aggregates/by-location": {
+      "get": {
+        "summary": "Get Aggregates By Location",
+        "description": "Provides a count of incidents for each location, supporting time range and other filters.",
+        "operationId": "get_aggregates_by_location_aggregates_by_location_get",
+        "parameters": [
+          {
+            "name": "operators",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more operators.",
+              "title": "Operators"
+            },
+            "description": "Filter by one or more operators."
+          },
+          {
+            "name": "phases",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more flight phases.",
+              "title": "Phases"
+            },
+            "description": "Filter by one or more flight phases."
+          },
+          {
+            "name": "aircraft_types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more aircraft types.",
+              "title": "Aircraft Types"
+            },
+            "description": "Filter by one or more aircraft types."
+          },
+          {
+            "name": "start_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start period in YYYY-MM format.",
+              "title": "Start Period"
+            },
+            "description": "Start period in YYYY-MM format."
+          },
+          {
+            "name": "end_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End period in YYYY-MM format.",
+              "title": "End Period"
+            },
+            "description": "End period in YYYY-MM format."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aggregates/heatmap": {
+      "get": {
+        "summary": "Get Heatmap Aggregates",
+        "description": "Provides aggregated data suitable for a heatmap visualization, showing the\nrelationship between two categorical dimensions.",
+        "operationId": "get_heatmap_aggregates_aggregates_heatmap_get",
+        "parameters": [
+          {
+            "name": "dimension1",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "operator",
+                "aircraft_type",
+                "phase"
+              ],
+              "type": "string",
+              "description": "The first dimension for the heatmap.",
+              "title": "Dimension1"
+            },
+            "description": "The first dimension for the heatmap."
+          },
+          {
+            "name": "dimension2",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "operator",
+                "aircraft_type",
+                "phase"
+              ],
+              "type": "string",
+              "description": "The second dimension for the heatmap.",
+              "title": "Dimension2"
+            },
+            "description": "The second dimension for the heatmap."
+          },
+          {
+            "name": "operators",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more operators.",
+              "title": "Operators"
+            },
+            "description": "Filter by one or more operators."
+          },
+          {
+            "name": "phases",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more flight phases.",
+              "title": "Phases"
+            },
+            "description": "Filter by one or more flight phases."
+          },
+          {
+            "name": "aircraft_types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more aircraft types.",
+              "title": "Aircraft Types"
+            },
+            "description": "Filter by one or more aircraft types."
+          },
+          {
+            "name": "locations",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more locations (ICAO codes).",
+              "title": "Locations"
+            },
+            "description": "Filter by one or more locations (ICAO codes)."
+          },
+          {
+            "name": "start_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start period in YYYY-MM format.",
+              "title": "Start Period"
+            },
+            "description": "Start period in YYYY-MM format."
+          },
+          {
+            "name": "end_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End period in YYYY-MM format.",
+              "title": "End Period"
+            },
+            "description": "End period in YYYY-MM format."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aggregates/statistics": {
+      "get": {
+        "summary": "Get Statistics",
+        "description": "Provides high-level summary statistics, including the total number of incidents.",
+        "operationId": "get_statistics_aggregates_statistics_get",
+        "parameters": [
+          {
+            "name": "operators",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more operators.",
+              "title": "Operators"
+            },
+            "description": "Filter by one or more operators."
+          },
+          {
+            "name": "phases",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more flight phases.",
+              "title": "Phases"
+            },
+            "description": "Filter by one or more flight phases."
+          },
+          {
+            "name": "aircraft_types",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more aircraft types.",
+              "title": "Aircraft Types"
+            },
+            "description": "Filter by one or more aircraft types."
+          },
+          {
+            "name": "locations",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by one or more locations (ICAO codes).",
+              "title": "Locations"
+            },
+            "description": "Filter by one or more locations (ICAO codes)."
+          },
+          {
+            "name": "start_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start period in YYYY-MM format.",
+              "title": "Start Period"
+            },
+            "description": "Start period in YYYY-MM format."
+          },
+          {
+            "name": "end_period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End period in YYYY-MM format.",
+              "title": "End Period"
+            },
+            "description": "End period in YYYY-MM format."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/human_evaluation/submit": {
+      "post": {
+        "summary": "Submit Human Evaluation",
+        "description": "Inserts a record into public.human_evaluation and marks the assignment as complete.",
+        "operationId": "submit_human_evaluation_human_evaluation_submit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HumanEvaluationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HumanEvaluationRequest": {
+        "properties": {
+          "classification_result_id": {
+            "type": "integer",
+            "title": "Classification Result Id"
+          },
+          "evaluator_id": {
+            "type": "string",
+            "title": "Evaluator Id"
+          },
+          "human_category": {
+            "type": "string",
+            "title": "Human Category"
+          },
+          "human_confidence": {
+            "type": "number",
+            "title": "Human Confidence"
+          },
+          "human_reasoning": {
+            "type": "string",
+            "title": "Human Reasoning"
+          }
+        },
+        "type": "object",
+        "required": [
+          "classification_result_id",
+          "evaluator_id",
+          "human_category",
+          "human_confidence",
+          "human_reasoning"
+        ],
+        "title": "HumanEvaluationRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

@@ -809,3 +809,32 @@ def dashboard_table_data(request):
     except requests.RequestException as e:
         from django.http import JsonResponse
         return JsonResponse({'error': str(e)}, status=500)
+
+    except requests.RequestException as e:
+        from django.http import JsonResponse
+        return JsonResponse({'error': str(e)}, status=500)
+
+def dashboard_seasonality_data(request):
+    """
+    Proxy view for Seasonal Trends (Heatmap).
+    Uses efficient backend endpoint: /aggregates/seasonal-distribution.
+    """
+    api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
+    
+    params = {}
+    if request.GET.get('start_year'):
+        params['start_year'] = request.GET.get('start_year')
+    if request.GET.get('end_year'):
+        params['end_year'] = request.GET.get('end_year')
+    
+    try:
+        resp = requests.get(f"{api_base}/aggregates/seasonal-distribution", params=params, timeout=10)
+        if resp.status_code == 200:
+            from django.http import JsonResponse
+            return JsonResponse(resp.json(), safe=False)
+        else:
+            from django.http import JsonResponse
+            return JsonResponse({'error': f"API Error: {resp.status_code}"}, status=resp.status_code)
+    except requests.RequestException as e:
+        from django.http import JsonResponse
+        return JsonResponse({'error': str(e)}, status=500)

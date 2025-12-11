@@ -1,0 +1,14 @@
+/airports
+/classification-results
+/full_classification_results_bulk
+/incidents/classified-detailed
+/aggregates/over-time
+/aggregates/top-n
+/aggregates/classification-over-time
+/incidents/locations
+/aggregates/hierarchy
+/aggregates/locations-over-time
+/aggregates/by-location
+/aggregates/heatmap
+/aggregates/statistics
+/human_evaluation/submit
