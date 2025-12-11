@@ -12,7 +12,8 @@ from .views import (
     dashboard_location_bar_data, 
     dashboard_table_data, 
     dashboard_operator_data,
-    dashboard_phase_data
+    dashboard_phase_data,
+    dashboard_aircraft_data
 )
 
 urlpatterns = [
@@ -24,6 +25,7 @@ urlpatterns = [
     path('dashboard/api/table-data/', dashboard_table_data, name='dashboard_table_data'),
     path('dashboard/api/operator-data/', dashboard_operator_data, name='dashboard_operator_data'),
     path('dashboard/api/phase-data/', dashboard_phase_data, name='dashboard_phase_data'),
+    path('dashboard/api/aircraft-data/', dashboard_aircraft_data, name='dashboard_aircraft_data'),
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', logout_view, name='logout'),
     path('tasks/', TaskListView.as_view(), name='task_list'),

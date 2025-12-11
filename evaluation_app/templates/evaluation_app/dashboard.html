@@ -462,11 +462,13 @@
                     </div>
                 </div>
 
-                <!-- Short Term Trend -->
+                <!-- Aircraft Type Distribution -->
                 <div class="card-panel">
-                    <div class="panel-header">Short-Term Trend</div>
+                    <div class="panel-header d-flex justify-content-between align-items-center">
+                        <span>Aircraft Type Distribution</span>
+                    </div>
                     <div class="panel-body" style="height: 300px; position: relative;">
-                        <canvas id="trendChart" style="width: 100%; height: 100%; display: block;"></canvas>
+                        <canvas id="aircraftChart" style="width: 100%; height: 100%; display: block;"></canvas>
                     </div>
                 </div>
 
@@ -1076,10 +1078,78 @@
 
         } catch (e) {
             console.error("Phase Fetch Failed", e);
-        } finally {
             toggleLoading('flightPhaseChart', false);
         }
     };
+
+    // H. Aircraft Type Chart (Donut)
+    const fetchAircraftData = async () => {
+        const url = "/dashboard/api/aircraft-data/";
+        toggleLoading('aircraftChart', true);
+
+        try {
+            const resp = await fetch(url);
+            const data = await resp.json();
+
+            // Format: [{ "category_value": "Boeing 737", "incident_count": 50 }, ...]
+            const labels = data.map(d => d.category_value || d.key);
+            const values = data.map(d => d.incident_count || d.value);
+
+            const ctx = document.getElementById('aircraftChart');
+            if (!ctx) return;
+
+            if (window.aircraftChartInstance) window.aircraftChartInstance.destroy();
+
+            // Palette
+            const palette = [
+                'rgba(196, 18, 48, 0.8)',   // CMU Red
+                'rgba(54, 162, 235, 0.8)',  // Blue
+                'rgba(255, 206, 86, 0.8)',  // Yellow
+                'rgba(75, 192, 192, 0.8)',  // Teal
+                'rgba(153, 102, 255, 0.8)', // Purple
+                'rgba(255, 159, 64, 0.8)'   // Orange
+            ];
+
+            window.aircraftChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Incidents',
+                        data: values,
+                        backgroundColor: palette,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } },
+                        title: { display: false }
+                    }
+                }
+            });
+
+        } catch (e) {
+            console.error("Aircraft Fetch Failed", e);
+        } finally {
+            toggleLoading('aircraftChart', false);
+        }
+    };
+
+    // Initial Calls
+    fetchAircraftData();
+    fetchPhaseData(); // Already called in previous block but good to ensure order
+    // fetchOperatorData() is called inside its block above? No, I need to check if I added the call.
+    // Step 1625: Added fetchOperatorData call.
+    // I'll just append fetchAircraftData() call.
+
+    // Note: fetchPhaseData() was called at end of its definition in previous edits.
+    // I don't need to re-call it here. I just place fetchAircraftData within the function or at global scope.
+    // The replacement content replaces the end of the file/block.
+    // I will just add the function and the call.
+
 
     // Wire up listeners
     const safeAddListener = (id, event, handler) => {
