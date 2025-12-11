@@ -355,8 +355,13 @@
                 </div>
 
                 <!-- Data Table -->
-                <div class="card-panel">
-                    <div class="panel-header">Recent Classification Results</div>
+                <div id="recentsCard" class="card-panel">
+                    <div class="panel-header d-flex justify-content-between align-items-center">
+                        <span>Recent Classification Results</span>
+                        <button id="btnReloadTable" class="btn btn-sm btn-outline-secondary" title="Reload">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
                     <div class="table-container p-0">
                         <table class="table table-striped mb-0">
                             <thead>
@@ -365,23 +370,12 @@
                                     <th>Operator</th>
                                     <th>Aircraft</th>
                                     <th>Phase</th>
-                                    <th>Cat</th>
+                                    <th>Classification</th>
+                                    <th>Confidence</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {% for item in table_data %}
-                                <tr>
-                                    <td>{{ item.date }}</td>
-                                    <td>{{ item.operator }}</td>
-                                    <td>{{ item.aircraft }}</td>
-                                    <td>{{ item.phase }}</td>
-                                    <td><span class="badge bg-secondary">{{ item.category }}</span></td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">No data available</td>
-                                </tr>
-                                {% endfor %}
+                            <tbody id="recentsBody">
+                                <!-- Loaded via JS -->
                             </tbody>
                         </table>
                     </div>
@@ -905,15 +899,84 @@
         }
     };
 
+    // E. Data Table
+    const fetchTableData = async () => {
+        const btn = document.getElementById('btnReloadTable');
+        const url = "/dashboard/api/table-data/";
+
+        // Visual Feedback
+        const originalIcon = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        btn.disabled = true;
+        toggleLoading('recentsCard', true);
+
+        const tbody = document.getElementById('recentsBody');
+        tbody.innerHTML = '';
+
+        try {
+            const resp = await fetch(url);
+            const data = await resp.json();
+
+            if (Array.isArray(data)) {
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No data available</td></tr>';
+                } else {
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        // Robust Usage: detailed response might have nested or different keys
+                        // Robust Usage: detailed response might have nested or different keys
+                        const date = item.origin_date || item.incident_date || item.date || 'N/A';
+                        const operator = item.origin_operator || item.operator || item.operator_name || 'Unknown';
+                        const aircraft = item.origin_aircraft_type || item.aircraft || item.aircraft_type || 'Unknown';
+                        const phase = item.origin_phase || item.phase || item.flight_phase || 'Unknown';
+                        const confidence = parseFloat(item.final_confidence) || 'Unknown';
+
+                        // Extract category name
+                        let category = item.final_category || 'Unknown';
+                        if (!category || category === 'Unknown') {
+                            if (typeof item.classification === 'object' && item.classification) {
+                                category = item.classification.category || item.classification.human_category || 'Unknown';
+                            } else if (item.category) {
+                                category = item.category;
+                            } else if (item.classification) {
+                                category = item.classification;
+                            }
+                        }
+
+                        row.innerHTML = `
+                            <td>${date}</td>
+                            <td>${operator}</td>
+                            <td>${aircraft}</td>
+                            <td>${phase}</td>
+                            <td><span class="badge bg-secondary">${category}</span></td>
+                            <td>${confidence}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+            }
+        } catch (e) {
+            console.error("Table Fetch Failed", e);
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error loading data</td></tr>';
+        } finally {
+            if (btn) {
+                btn.innerHTML = originalIcon;
+                btn.disabled = false;
+            }
+            toggleLoading('recentsCard', false);
+        }
+    };
+
     // Wire up listeners
     document.getElementById('btnReloadLocation').addEventListener('click', fetchGeoAndLocationData);
     document.getElementById('locStart').addEventListener('change', fetchGeoAndLocationData);
     document.getElementById('locEnd').addEventListener('change', fetchGeoAndLocationData);
     document.getElementById('locFilter').addEventListener('change', fetchGeoAndLocationData);
+    document.getElementById('btnReloadTable').addEventListener('click', fetchTableData);
 
     // Auto-load on init
     fetchGeoAndLocationData();
-
+    fetchTableData();
 </script>
 {% endblock %}
 {% block content %}{% endblock %}
