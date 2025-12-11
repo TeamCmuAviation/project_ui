@@ -838,3 +838,28 @@ def dashboard_seasonality_data(request):
     except requests.RequestException as e:
         from django.http import JsonResponse
         return JsonResponse({'error': str(e)}, status=500)
+
+def dashboard_risk_heatmap_data(request):
+    """
+    Proxy view for Risk Heatmap (Phase vs Category).
+    Proxies to /aggregates/risk-heatmap.
+    """
+    api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
+    
+    params = {}
+    if request.GET.get('start_year'):
+        params['start_year'] = request.GET.get('start_year')
+    if request.GET.get('end_year'):
+        params['end_year'] = request.GET.get('end_year')
+    
+    try:
+        resp = requests.get(f"{api_base}/aggregates/risk-heatmap", params=params, timeout=10)
+        if resp.status_code == 200:
+            from django.http import JsonResponse
+            return JsonResponse(resp.json(), safe=False)
+        else:
+            from django.http import JsonResponse
+            return JsonResponse({'error': f"Backend Error: {resp.status_code}", 'details': resp.text}, status=resp.status_code)
+    except Exception as e:
+        from django.http import JsonResponse
+        return JsonResponse({'error': str(e)}, status=500)

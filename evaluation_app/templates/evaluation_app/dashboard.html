@@ -398,13 +398,30 @@
                     </div>
                 </div>
 
-                <!-- Seasonal Trends (Heatmap) - New Row (Nested) -->
+                <!-- Seasonal Trends & Risk Heatmap Row -->
                 <div class="row mt-3">
-                    <div class="col-md-6"> <!-- 50% Width -->
+                    <!-- Seasonal Trends (Left) -->
+                    <div class="col-md-6">
                         <div class="card-panel">
                             <div class="panel-header">Seasonal Trends (Month vs Year)</div>
                             <div class="panel-body" style="height: 300px; position: relative;">
                                 <canvas id="seasonalChart" style="width: 100%; height: 100%; display: block;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Risk Heatmap (Right) -->
+                    <div class="col-md-6">
+                        <div class="card-panel">
+                            <div class="panel-header">Risk Heatmap (Phase vs Category)</div>
+                            <div class="panel-body" style="height: 300px; position: relative;">
+                                <canvas id="riskHeatmapChart"
+                                    style="width: 100%; height: 100%; display: block;"></canvas>
+                                <!-- Placeholder Message until API is ready -->
+                                <div id="riskPlaceholder" class="d-flex justify-content-center align-items-center"
+                                    style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.8); display: none;">
+                                    <span class="text-muted">Waiting for API...</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1123,6 +1140,108 @@
         }
     };
 
+    // J. Risk Heatmap (Phase vs Category)
+    const fetchRiskData = async () => {
+        const url = "/dashboard/api/risk-heatmap/?start_year=2000&end_year=2025";
+        const placeholder = document.getElementById('riskPlaceholder');
+
+        toggleLoading('riskHeatmapChart', true);
+
+        try {
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error("API Error");
+            const data = await resp.json();
+
+            // Hide placeholder if successful
+            if (placeholder) placeholder.style.display = 'none';
+
+            // Data Format: [{phase: "Landing", category: "LOC-I", count: 10}, ...]
+            // X: Phase, Y: Category
+
+            const phases = new Set();
+            const categories = new Set();
+            let maxVal = 0;
+
+            const matrixData = data.map(d => {
+                const p = d.phase || 'Unknown';
+                const c = d.category || 'Other';
+                const v = d.count || d.value || 0;
+
+                phases.add(p);
+                categories.add(c);
+                if (v > maxVal) maxVal = v;
+
+                return { x: p, y: c, v: v };
+            });
+
+            // Convert Sets to Arrays and Sort
+            const xLabels = Array.from(phases).sort();
+            const yLabels = Array.from(categories).sort();
+
+            const ctx = document.getElementById('riskHeatmapChart');
+            if (ctx) {
+                if (window.riskChartInstance) window.riskChartInstance.destroy();
+
+                window.riskChartInstance = new Chart(ctx, {
+                    type: 'matrix',
+                    data: {
+                        datasets: [{
+                            label: 'Risk Heatmap',
+                            data: matrixData,
+                            backgroundColor(c) {
+                                const value = c.raw.v;
+                                const alpha = (value / maxVal) || 0;
+                                // Orange/Red for Risk
+                                return `rgba(255, 69, 0, ${Math.max(0.1, alpha)})`;
+                            },
+                            width: ({ chart }) => (chart.chartArea || {}).width / (xLabels.length || 1) - 1,
+                            height: ({ chart }) => (chart.chartArea || {}).height / (yLabels.length || 1) - 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    title() { return ''; },
+                                    label(context) {
+                                        const v = context.raw;
+                                        return `${v.x} / ${v.y}: ${v.v} Incidents`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'category',
+                                labels: xLabels,
+                                grid: { display: false },
+                                ticks: { autoSkip: false, maxRotation: 90 }
+                            },
+                            y: {
+                                type: 'category',
+                                labels: yLabels,
+                                offset: true,
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+        } catch (e) {
+            console.error("Risk Fetch Failed", e);
+            if (placeholder) {
+                placeholder.style.display = 'flex';
+                placeholder.innerHTML = '<span class="text-danger">Failed to load data</span>';
+            }
+        } finally {
+            toggleLoading('riskHeatmapChart', false);
+        }
+    };
+
     // Initial Calls
     fetchAircraftData();
     fetchPhaseData(); // Already called in previous block but good to ensure order
@@ -1158,6 +1277,8 @@
     fetchOperatorData();
     fetchPhaseData();
     fetchSeasonalData();
+    fetchRiskData();
+
 </script>
 {% endblock %}
 {% block content %}{% endblock %}
