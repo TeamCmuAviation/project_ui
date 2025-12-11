@@ -358,9 +358,6 @@
                 <div id="recentsCard" class="card-panel">
                     <div class="panel-header d-flex justify-content-between align-items-center">
                         <span>Recent Classification Results</span>
-                        <button id="btnReloadTable" class="btn btn-sm btn-outline-secondary" title="Reload">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
                     </div>
                     <div class="table-container p-0">
                         <table class="table table-striped mb-0">
@@ -437,11 +434,11 @@
                     </div>
                 </div>
 
-                <!-- Top Aircraft -->
+                <!-- Incidents by Operator -->
                 <div class="card-panel">
-                    <div class="panel-header">Top Aircraft Types</div>
+                    <div class="panel-header">Incidents by Operator</div>
                     <div class="panel-body" style="height: 300px; position: relative;">
-                        <canvas id="aircraftVertChart" style="width: 100%; height: 100%; display: block;"></canvas>
+                        <canvas id="operatorChart" style="width: 100%; height: 100%; display: block;"></canvas>
                     </div>
                 </div>
 
@@ -450,14 +447,6 @@
                     <div class="panel-header">Short-Term Trend</div>
                     <div class="panel-body" style="height: 300px; position: relative;">
                         <canvas id="trendChart" style="width: 100%; height: 100%; display: block;"></canvas>
-                    </div>
-                </div>
-
-                <!-- Top 5 Operators -->
-                <div class="card-panel">
-                    <div class="panel-header">Top 5 Operators</div>
-                    <div class="panel-body" style="height: 300px; position: relative;">
-                        <canvas id="operatorChart" style="width: 100%; height: 100%; display: block;"></canvas>
                     </div>
                 </div>
 
@@ -905,9 +894,12 @@
         const url = "/dashboard/api/table-data/";
 
         // Visual Feedback
-        const originalIcon = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        btn.disabled = true;
+        let originalIcon = '';
+        if (btn) {
+            originalIcon = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+        }
         toggleLoading('recentsCard', true);
 
         const tbody = document.getElementById('recentsBody');
@@ -959,24 +951,78 @@
             console.error("Table Fetch Failed", e);
             tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error loading data</td></tr>';
         } finally {
-            if (btn) {
-                btn.innerHTML = originalIcon;
-                btn.disabled = false;
-            }
             toggleLoading('recentsCard', false);
         }
     };
 
+    // F. Operator Chart
+    const fetchOperatorData = async () => {
+        const url = "/dashboard/api/operator-data/";
+        toggleLoading('operatorChart', true);
+
+        try {
+            const resp = await fetch(url);
+            const data = await resp.json();
+
+            // Format: [{ "key": "United Airlines", "value": 45 }, ...]
+            const labels = data.map(d => d.key);
+            const values = data.map(d => d.value);
+
+            const ctx = document.getElementById('operatorChart');
+            if (!ctx) return;
+
+            // Reset if exists
+            if (window.operatorChartInstance) window.operatorChartInstance.destroy();
+
+            window.operatorChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Incidents',
+                        data: values,
+                        backgroundColor: 'rgba(196, 18, 48, 0.7)', // CMU Red
+                        borderColor: 'rgba(196, 18, 48, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // Horizontal bar chart
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Top 5 Operators' }
+                    },
+                    scales: {
+                        x: { beginAtZero: true }
+                    }
+                }
+            });
+
+        } catch (e) {
+            console.error("Operator Fetch Failed", e);
+        } finally {
+            toggleLoading('operatorChart', false);
+        }
+    };
+
     // Wire up listeners
-    document.getElementById('btnReloadLocation').addEventListener('click', fetchGeoAndLocationData);
-    document.getElementById('locStart').addEventListener('change', fetchGeoAndLocationData);
-    document.getElementById('locEnd').addEventListener('change', fetchGeoAndLocationData);
-    document.getElementById('locFilter').addEventListener('change', fetchGeoAndLocationData);
-    document.getElementById('btnReloadTable').addEventListener('click', fetchTableData);
+    const safeAddListener = (id, event, handler) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener(event, handler);
+    };
+
+    safeAddListener('btnReloadLocation', 'click', fetchGeoAndLocationData);
+    safeAddListener('locStart', 'change', fetchGeoAndLocationData);
+    safeAddListener('locEnd', 'change', fetchGeoAndLocationData);
+    safeAddListener('locFilter', 'change', fetchGeoAndLocationData);
+    safeAddListener('btnReloadTable', 'click', fetchTableData);
 
     // Auto-load on init
     fetchGeoAndLocationData();
     fetchTableData();
+    fetchOperatorData();
 </script>
 {% endblock %}
 {% block content %}{% endblock %}

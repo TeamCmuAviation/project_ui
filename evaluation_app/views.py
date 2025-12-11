@@ -718,6 +718,29 @@ def dashboard_location_bar_data(request):
         from django.http import JsonResponse
         return JsonResponse({'error': str(e)}, status=500)
 
+def dashboard_operator_data(request):
+    """
+    Proxy view for Top-N Operators bar chart (Top 5).
+    """
+    api_base = getattr(settings, 'FASTAPI_BASE_URL', 'http://localhost:8000')
+    
+    params = {
+        'category': 'operator', 
+        'n': 5
+    }
+    
+    try:
+        resp = requests.get(f"{api_base}/aggregates/top-n", params=params, timeout=30)
+        if resp.status_code == 200:
+            from django.http import JsonResponse
+            return JsonResponse(resp.json(), safe=False)
+        else:
+            from django.http import JsonResponse
+            return JsonResponse({'error': f"API Error: {resp.status_code}"}, status=resp.status_code)
+    except requests.RequestException as e:
+        from django.http import JsonResponse
+        return JsonResponse({'error': str(e)}, status=500)
+
 def dashboard_table_data(request):
     """
     Proxy for /incidents/classified-detailed
