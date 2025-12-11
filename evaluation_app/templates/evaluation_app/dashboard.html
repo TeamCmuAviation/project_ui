@@ -378,6 +378,26 @@
                     </div>
                 </div>
 
+                <!-- Incidents by Phase of Flight -->
+                <div class="card-panel">
+                    <div class="panel-header d-flex justify-content-between align-items-center">
+                        <span>Incidents by Phase of Flight</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="month" id="phaseStart" class="form-control form-control-sm"
+                                style="width: 130px;">
+                            <span class="text-muted">-</span>
+                            <input type="month" id="phaseEnd" class="form-control form-control-sm"
+                                style="width: 130px;">
+                            <button id="btnReloadPhase" class="btn btn-sm btn-outline-secondary" title="Reload">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-body" style="height: 300px; position: relative;">
+                        <canvas id="flightPhaseChart" style="width: 100%; height: 100%; display: block;"></canvas>
+                    </div>
+                </div>
+
                 <!-- Footer/Aggregate -->
                 <div class="card-panel" style="background: var(--cmu-red); color: white;">
                     <div
@@ -964,9 +984,9 @@
             const resp = await fetch(url);
             const data = await resp.json();
 
-            // Format: [{ "key": "United Airlines", "value": 45 }, ...]
-            const labels = data.map(d => d.key);
-            const values = data.map(d => d.value);
+            // Format: [{ "category_value": "United", "incident_count": 45 }, ...]
+            const labels = data.map(d => d.category_value || d.key);
+            const values = data.map(d => d.incident_count || d.value);
 
             const ctx = document.getElementById('operatorChart');
             if (!ctx) return;
@@ -1007,6 +1027,60 @@
         }
     };
 
+    // G. Phase Chart
+    const fetchPhaseData = async () => {
+        const url = "/dashboard/api/phase-data/";
+        const start = document.getElementById('phaseStart').value;
+        const end = document.getElementById('phaseEnd').value;
+
+        const params = new URLSearchParams();
+        if (start) params.append('start_period', start);
+        if (end) params.append('end_period', end);
+
+        toggleLoading('flightPhaseChart', true);
+
+        try {
+            const resp = await fetch(`${url}?${params.toString()}`);
+            const data = await resp.json();
+
+            // Format: [{ "category_value": "Cruise", "incident_count": 150 }, ...]
+            const labels = data.map(d => d.category_value || d.key);
+            const values = data.map(d => d.incident_count || d.value);
+
+            const ctx = document.getElementById('flightPhaseChart');
+            if (!ctx) return;
+
+            if (window.phaseChartInstance) window.phaseChartInstance.destroy();
+
+            window.phaseChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Incidents',
+                        data: values,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)', // Blue
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Incidents by Phase' }
+                    }
+                }
+            });
+
+        } catch (e) {
+            console.error("Phase Fetch Failed", e);
+        } finally {
+            toggleLoading('flightPhaseChart', false);
+        }
+    };
+
     // Wire up listeners
     const safeAddListener = (id, event, handler) => {
         const el = document.getElementById(id);
@@ -1019,10 +1093,15 @@
     safeAddListener('locFilter', 'change', fetchGeoAndLocationData);
     safeAddListener('btnReloadTable', 'click', fetchTableData);
 
+    safeAddListener('btnReloadPhase', 'click', fetchPhaseData);
+    safeAddListener('phaseStart', 'change', fetchPhaseData);
+    safeAddListener('phaseEnd', 'change', fetchPhaseData);
+
     // Auto-load on init
     fetchGeoAndLocationData();
     fetchTableData();
     fetchOperatorData();
+    fetchPhaseData();
 </script>
 {% endblock %}
 {% block content %}{% endblock %}
