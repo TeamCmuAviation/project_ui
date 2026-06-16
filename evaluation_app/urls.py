@@ -16,7 +16,8 @@ from .views import (
     dashboard_aircraft_data,
     dashboard_seasonality_data,
     dashboard_risk_heatmap_data,
-    ReportGeneratorView
+    ReportGeneratorView,
+    google_login_complete
 )
 
 urlpatterns = [
@@ -32,6 +33,7 @@ urlpatterns = [
     path('dashboard/api/seasonality-data/', dashboard_seasonality_data, name='dashboard_seasonality_data'),
     path('dashboard/api/risk-heatmap/', dashboard_risk_heatmap_data, name='dashboard_risk_heatmap_data'),
     path('login/', LoginView.as_view(), name='login'),
+    path('auth/complete/', google_login_complete, name='google_login_complete'),
     path('logout/', logout_view, name='logout'),
     path('tasks/', TaskListView.as_view(), name='task_list'),
     path('evaluate/<str:uid>/', EvaluationInterfaceView.as_view(), name='evaluate'),

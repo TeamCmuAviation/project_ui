@@ -10,4 +10,13 @@ services:
       - "8000:8000"
     environment:
       - DEBUG=1
+      - SECRET_KEY=django-insecure-dev-only-change-me
+      - ALLOWED_HOSTS=localhost,127.0.0.1
       - FASTAPI_BASE_URL=http://host.docker.internal:58510
+      # Set these to enable Google OAuth login without using Django admin SocialApp records.
+      # The Google callback URL is http://localhost:8000/accounts/google/login/callback/
+      - GOOGLE_CLIENT_ID=
+      - GOOGLE_CLIENT_SECRET=
+      # Optional: restrict Google users by domain and map emails to backend evaluator IDs.
+      # - GOOGLE_ALLOWED_DOMAINS=example.org
+      # - GOOGLE_EVALUATOR_MAP=person@example.org:RONNIE,other@example.org:JB

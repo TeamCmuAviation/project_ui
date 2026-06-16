@@ -261,11 +261,16 @@
                 class="nav-link {% if request.resolver_match.url_name == 'dashboard' or request.path == '/' %}active{% endif %}">Dashboard</a>
             <a href="{% url 'task_list' %}"
                 class="nav-link {% if 'task' in request.resolver_match.url_name or 'evaluate' in request.resolver_match.url_name %}active{% endif %}">Evaluation</a>
+            <a href="{% url 'report_generator' %}"
+                class="nav-link {% if request.resolver_match.url_name == 'report_generator' %}active{% endif %}">Reports</a>
         </nav>
 
         <div class="header-right">
             {% if request.session.evaluator_id %}
             <span>Evaluator: <strong>{{ request.session.evaluator_id }}</strong></span>
+            {% if request.session.evaluator_email %}
+            <span style="color: #666;">{{ request.session.evaluator_email }}</span>
+            {% endif %}
             <a href="{% url 'logout' %}" class="btn btn-secondary"
                 style="padding: 5px 15px; font-size: 0.85rem; margin-left: 10px;">Logout</a>
             {% else %}

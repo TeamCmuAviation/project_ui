@@ -6,7 +6,7 @@ This tool connects to a backend FastAPI service to retrieve evaluation tasks and
 
 ## Features
 
-- **Evaluator Authentication**: Simple access-code based login system for authorized evaluators.
+- **Evaluator Authentication**: Google OAuth login for authorized evaluators, with legacy access-code login available as a local fallback.
 - **Task Management**: Browse a list of all available classification results and select cases to evaluate.
 - **Data Visualization**: Displays detailed origin data and automated classification results for review.
 - **Evaluation Interface**: User-friendly form to submit:
@@ -29,19 +29,29 @@ This tool connects to a backend FastAPI service to retrieve evaluation tasks and
     ```
 
 2.  **Install Dependencies:**
-    Since a `requirements.txt` is not provided, install the core dependencies manually:
     ```bash
-    pip install django requests
+    pip install -r requirements.txt
     ```
 
 ## Configuration
 
-The application is configured to communicate with a backend API. You can change the API base URL in `human_eval_project/settings.py`:
+The application is configured through environment variables:
 
-```python
-# human_eval_project/settings.py
+- `SECRET_KEY`: Django secret key. Set this in any non-local environment.
+- `DEBUG`: `1`/`true` for development, `0`/`false` for production.
+- `ALLOWED_HOSTS`: comma-separated hostnames, for example `localhost,127.0.0.1`.
+- `FASTAPI_BASE_URL`: backend API URL, default `http://localhost:58510`.
+- `GOOGLE_CLIENT_ID`: Google OAuth client ID.
+- `GOOGLE_CLIENT_SECRET`: Google OAuth client secret.
+- `GOOGLE_ALLOWED_DOMAINS`: optional comma-separated allowlist, for example `example.org`.
+- `GOOGLE_EVALUATOR_MAP`: optional email-to-evaluator mapping, for example `person@example.org:RONNIE,other@example.org:JB`.
 
-FASTAPI_BASE_URL = 'http://localhost:58510' # Update this port/url if your backend differs
+If `GOOGLE_EVALUATOR_MAP` does not contain a signed-in email, the evaluator ID defaults to the email local-part in uppercase. For example, `ronnie@example.org` becomes `RONNIE`.
+
+Configure the Google OAuth redirect URI as:
+
+```text
+http://localhost:8000/accounts/google/login/callback/
 ```
 
 ## Database Setup
@@ -64,12 +74,7 @@ python manage.py migrate
 
 ## Usage
 
-1.  **Login**: Enter your assigned **Access Code** on the login page.
-    - **Available Codes**:
-        - `BARAKA`
-        - `RONNIE`
-        - `NASIRU`
-        - `JB`
+1.  **Login**: Sign in with your authorized Google account. The access-code form remains available for local fallback use.
 2.  **Select Task**:
     - You will be redirected to the **Task List**.
     - Browse the table of classification results.
@@ -120,3 +125,4 @@ This project includes Docker support for easy deployment.
 The `docker-compose.yml` file sets the following environment variables:
 - `DEBUG=1`: Enables Django debug mode.
 - `FASTAPI_BASE_URL=http://host.docker.internal:58510`: Points to the backend API running on the host machine. If your API is running elsewhere, update this value in `docker-compose.yml`.
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`: Enable Google OAuth login.

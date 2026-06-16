@@ -10,7 +10,26 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+
+def env_bool(name, default=False):
+    return os.environ.get(name, str(default)).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def env_list(name, default=""):
+    return [item.strip() for item in os.environ.get(name, default).split(",") if item.strip()]
+
+
+def env_mapping(name):
+    mapping = {}
+    for pair in env_list(name):
+        if ":" not in pair:
+            continue
+        key, value = pair.split(":", 1)
+        mapping[key.strip().lower()] = value.strip()
+    return mapping
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +39,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6wgpv3(&_f&oz&13+f+sfk-5mq!%8#a@(+22_0lz@igf)tz)6c'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-dev-only-change-me'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env_bool('DEBUG', True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1')
 
 
 # Application definition
@@ -37,10 +59,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     'evaluation_app',
 ]
-
-FASTAPI_BASE_URL = 'http://localhost:58510'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -48,6 +73,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -120,5 +146,40 @@ USE_TZ = True
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Authentication
+SITE_ID = int(os.environ.get('SITE_ID', '1'))
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/auth/complete/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+ACCOUNT_EMAIL_VERIFICATION = os.environ.get('ACCOUNT_EMAIL_VERIFICATION', 'none')
+SOCIALACCOUNT_LOGIN_ON_GET = env_bool('SOCIALACCOUNT_LOGIN_ON_GET', True)
+SOCIALACCOUNT_AUTO_SIGNUP = env_bool('SOCIALACCOUNT_AUTO_SIGNUP', True)
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+google_client_id = os.environ.get('GOOGLE_CLIENT_ID', '')
+google_client_secret = os.environ.get('GOOGLE_CLIENT_SECRET', '')
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    }
+}
+if google_client_id and google_client_secret:
+    SOCIALACCOUNT_PROVIDERS['google']['APP'] = {
+        'client_id': google_client_id,
+        'secret': google_client_secret,
+        'key': '',
+    }
+
 # FastAPI Configuration
-FASTAPI_BASE_URL = 'http://localhost:58510'
+FASTAPI_BASE_URL = os.environ.get('FASTAPI_BASE_URL', 'http://localhost:58510').rstrip('/')
+
+# Optional Google-account controls.
+# GOOGLE_ALLOWED_DOMAINS example: cmu.edu,example.org
+# GOOGLE_EVALUATOR_MAP example: person@example.org:RONNIE,other@example.org:JB
+GOOGLE_ALLOWED_DOMAINS = env_list('GOOGLE_ALLOWED_DOMAINS')
+GOOGLE_EVALUATOR_MAP = env_mapping('GOOGLE_EVALUATOR_MAP')

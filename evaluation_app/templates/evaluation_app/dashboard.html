@@ -694,6 +694,14 @@
 
     let mapLayerGroup = L.layerGroup().addTo(map);
 
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    }[char]));
+
     // 2. Initialize Location Bar Chart
     const locationCtx = document.getElementById('locationChart');
     let locationChartInstance = null;
@@ -733,9 +741,9 @@
         let barUrl = `{% url 'dashboard_location_bar_data' %}?t=${new Date().getTime()}`;
 
         let queryParams = "";
-        if (start) queryParams += `&start_period=${start}`;
-        if (end) queryParams += `&end_period=${end}`;
-        if (location) queryParams += `&location=${location}`;
+        if (start) queryParams += `&start_period=${encodeURIComponent(start)}`;
+        if (end) queryParams += `&end_period=${encodeURIComponent(end)}`;
+        if (location) queryParams += `&location=${encodeURIComponent(location)}`;
 
         geoUrl += queryParams;
         barUrl += queryParams;
@@ -770,6 +778,9 @@
                     // Radius scaling: sqrt of count * multiplier, min 5px, max 20px
                     const r = Math.min(Math.max(Math.sqrt(count) * 2, 5), 20);
 
+                    const locationName = escapeHtml(pt.location_name || pt.name || 'Unknown');
+                    const locationCode = escapeHtml(pt.location || pt.icao || '');
+
                     L.circleMarker([lat, lon], {
                         radius: r,
                         fillColor: CMU_RED,
@@ -779,7 +790,7 @@
                         fillOpacity: 0.6
                     })
                         // Tooltip: Name (ICAO) \n Count
-                        .bindTooltip(`<b>${pt.location_name || pt.name || 'Unknown'}</b> (${pt.location || pt.icao})<br>Count: ${count}`)
+                        .bindTooltip(`<b>${locationName}</b> (${locationCode})<br>Count: ${count}`)
                         .addTo(mapLayerGroup);
                 });
             }
@@ -825,7 +836,7 @@
 
             if (Array.isArray(data)) {
                 if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No data available</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No data available</td></tr>';
                 } else {
                     data.forEach(item => {
                         const row = document.createElement('tr');
@@ -849,21 +860,29 @@
                             }
                         }
 
-                        row.innerHTML = `
-                            <td>${date}</td>
-                            <td>${operator}</td>
-                            <td>${aircraft}</td>
-                            <td>${phase}</td>
-                            <td><span class="badge bg-secondary">${category}</span></td>
-                            <td>${confidence}</td>
-                        `;
+                        [date, operator, aircraft, phase].forEach(value => {
+                            const cell = document.createElement('td');
+                            cell.textContent = value;
+                            row.appendChild(cell);
+                        });
+
+                        const categoryCell = document.createElement('td');
+                        const categoryBadge = document.createElement('span');
+                        categoryBadge.className = 'badge bg-secondary';
+                        categoryBadge.textContent = category;
+                        categoryCell.appendChild(categoryBadge);
+                        row.appendChild(categoryCell);
+
+                        const confidenceCell = document.createElement('td');
+                        confidenceCell.textContent = confidence;
+                        row.appendChild(confidenceCell);
                         tbody.appendChild(row);
                     });
                 }
             }
         } catch (e) {
             console.error("Table Fetch Failed", e);
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error loading data</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error loading data</td></tr>';
         } finally {
             toggleLoading('recentsCard', false);
         }

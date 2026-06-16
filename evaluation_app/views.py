@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib import messages
 from django.conf import settings
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout as auth_logout
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 import requests
 import json
 
@@ -206,8 +207,72 @@ ICAO_CATEGORIES = {
 
 VALID_EVALUATORS = ['BARAKA', 'RONNIE', 'NASIRU', 'JB']
 
+
+def safe_redirect(request, url, fallback):
+    if url and url_has_allowed_host_and_scheme(
+        url=url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        return redirect(url)
+    return redirect(fallback)
+
+
+def evaluator_id_from_google_user(user):
+    email = (getattr(user, 'email', '') or '').strip().lower()
+    if not email:
+        return None
+
+    allowed_domains = [item.lower() for item in getattr(settings, 'GOOGLE_ALLOWED_DOMAINS', [])]
+    domain = email.rsplit('@', 1)[-1]
+    if allowed_domains and domain not in allowed_domains:
+        return None
+
+    evaluator_map = getattr(settings, 'GOOGLE_EVALUATOR_MAP', {})
+    if email in evaluator_map:
+        return evaluator_map[email]
+
+    return email.split('@', 1)[0].upper()
+
+
+def require_evaluator_session(request):
+    if request.session.get('evaluator_id'):
+        return None
+    return redirect(f"{reverse('login')}?next={request.path}")
+
+
+def google_login_complete(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    evaluator_id = evaluator_id_from_google_user(request.user)
+    if not evaluator_id:
+        auth_logout(request)
+        messages.error(request, "Your Google account is not authorized for this evaluation tool.")
+        return redirect('login')
+
+    request.session['evaluator_id'] = evaluator_id
+    request.session['evaluator_email'] = request.user.email
+    next_url = request.session.pop('login_next_url', None)
+    return safe_redirect(request, next_url, 'task_list')
+
+
 class LoginView(View):
     def get(self, request):
+        next_url = request.GET.get('next')
+        if next_url and url_has_allowed_host_and_scheme(
+            url=next_url,
+            allowed_hosts={request.get_host()},
+            require_https=request.is_secure(),
+        ):
+            request.session['login_next_url'] = next_url
+
+        if request.session.get('evaluator_id'):
+            return safe_redirect(request, next_url, 'task_list')
+
+        if request.user.is_authenticated:
+            return redirect('google_login_complete')
+
         return render(request, 'evaluation_app/login.html')
 
     def post(self, request):
@@ -215,24 +280,22 @@ class LoginView(View):
         if code in VALID_EVALUATORS:
             request.session['evaluator_id'] = code
             next_url = request.GET.get('next') or request.POST.get('next')
-            if next_url:
-                return redirect(next_url)
-            return redirect('task_list')
+            return safe_redirect(request, next_url, 'task_list')
         else:
             messages.error(request, "Invalid access code. Access denied.")
             return redirect('login')
 
 def logout_view(request):
-    request.session.flush()
+    auth_logout(request)
     messages.success(request, "Logged out successfully.")
     return redirect('dashboard')
 
 
 class TaskListView(View):
     def dispatch(self, request, *args, **kwargs):
-        if not request.session.get('evaluator_id'):
-            from django.urls import reverse
-            return redirect(f"{reverse('login')}?next={request.path}")
+        redirect_response = require_evaluator_session(request)
+        if redirect_response:
+            return redirect_response
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
@@ -281,7 +344,6 @@ class TaskListView(View):
         }
         return render(request, 'evaluation_app/task_list.html', context)
 
-@login_required
 def random_task(request):
     """
     Redirects to a random pending task for the current evaluator.
@@ -325,9 +387,9 @@ def random_task(request):
 
 class EvaluationInterfaceView(View):
     def dispatch(self, request, *args, **kwargs):
-        if not request.session.get('evaluator_id'):
-            from django.urls import reverse
-            return redirect(f"{reverse('login')}?next={request.path}")
+        redirect_response = require_evaluator_session(request)
+        if redirect_response:
+            return redirect_response
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, uid):
@@ -385,13 +447,20 @@ class EvaluationInterfaceView(View):
         # Let's expect it in POST
         classification_result_id = request.POST.get('classification_result_id')
         
-        payload = {
-            "classification_result_id": int(classification_result_id),
-            "evaluator_id": evaluator_id,
-            "human_category": request.POST.get('human_category'),
-            "human_confidence": float(request.POST.get('human_confidence')),
-            "human_reasoning": request.POST.get('human_reasoning')
-        }
+        try:
+            human_confidence = float(request.POST.get('human_confidence', ''))
+            if not 0 <= human_confidence <= 1:
+                raise ValueError
+            payload = {
+                "classification_result_id": int(classification_result_id),
+                "evaluator_id": evaluator_id,
+                "human_category": request.POST.get('human_category'),
+                "human_confidence": human_confidence,
+                "human_reasoning": request.POST.get('human_reasoning')
+            }
+        except (TypeError, ValueError):
+            messages.error(request, "Invalid evaluation submission. Check the confidence score and try again.")
+            return redirect('evaluate', uid=uid)
 
         try:
             submit_resp = requests.post(f"{api_base}/human_evaluation/submit", json=payload, timeout=120)
@@ -810,10 +879,6 @@ def dashboard_table_data(request):
         from django.http import JsonResponse
         return JsonResponse({'error': str(e)}, status=500)
 
-    except requests.RequestException as e:
-        from django.http import JsonResponse
-        return JsonResponse({'error': str(e)}, status=500)
-
 def dashboard_seasonality_data(request):
     """
     Proxy view for Seasonal Trends (Heatmap).
@@ -881,9 +946,13 @@ class ReportGeneratorView(View):
     def get(self, request):
         # Fetch Top 100 Operators for dropdown
         try:
-            resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/top-n?category=operator&n=100")
+            resp = requests.get(
+                f"{settings.FASTAPI_BASE_URL}/aggregates/top-n",
+                params={'category': 'operator', 'n': 100},
+                timeout=30,
+            )
             operators = [d['category_value'] for d in resp.json()] if resp.ok else []
-        except:
+        except requests.RequestException:
             operators = []
         
         return render(request, self.template_name, {'operators': sorted(operators)})
@@ -906,12 +975,20 @@ class ReportGeneratorView(View):
             # Fetch Charts for Operator
             try:
                 # Chart 1: Time Series
-                t_resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/over-time?operator={operator}")
+                t_resp = requests.get(
+                    f"{settings.FASTAPI_BASE_URL}/aggregates/over-time",
+                    params={'operators': [operator]},
+                    timeout=30,
+                )
                 chart_data['time_series'] = t_resp.json() if t_resp.ok else []
                 # Chart 2: Top Phases
-                p_resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/top-n?category=phase&operator={operator}")
+                p_resp = requests.get(
+                    f"{settings.FASTAPI_BASE_URL}/aggregates/top-n",
+                    params={'category': 'phase', 'operators': [operator]},
+                    timeout=30,
+                )
                 chart_data['top_n_1'] = p_resp.json() if p_resp.ok else []
-            except:
+            except requests.RequestException:
                 pass
 
         elif context_type == 'LOCATION' and location:
@@ -920,12 +997,20 @@ class ReportGeneratorView(View):
             # Fetch Charts for Location
             try:
                 # Chart 1: Time Series
-                t_resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/over-time?location={location}")
+                t_resp = requests.get(
+                    f"{settings.FASTAPI_BASE_URL}/aggregates/over-time",
+                    params={'locations': [location]},
+                    timeout=30,
+                )
                 chart_data['time_series'] = t_resp.json() if t_resp.ok else []
                 # Chart 2: Top Categories
-                c_resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/top-n?category=final_category&location={location}")
+                c_resp = requests.get(
+                    f"{settings.FASTAPI_BASE_URL}/aggregates/top-n",
+                    params={'category': 'final_category', 'locations': [location]},
+                    timeout=30,
+                )
                 chart_data['top_n_1'] = c_resp.json() if c_resp.ok else []
-            except:
+            except requests.RequestException:
                 pass
 
         # 2. Fetch Raw Narratives for LLM
@@ -936,14 +1021,17 @@ class ReportGeneratorView(View):
             # Note: We need a way to filter by operator/location on this endpoint
             # Assuming GET /incidents/classified-detailed supports filters
             
-            # Construct Query String
-            query_params = []
-            if 'operator' in filters: query_params.append(f"operator={filters['operator']}")
-            if 'location' in filters: query_params.append(f"location={filters['location']}")
-            query_str = "&".join(query_params)
-            
-            narr_url = f"{settings.FASTAPI_BASE_URL}/incidents/classified-detailed?limit=20&{query_str}"
-            narr_resp = requests.get(narr_url)
+            params = {'limit': 20}
+            if 'operator' in filters:
+                params['operators'] = [filters['operator']]
+            if 'location' in filters:
+                params['locations'] = [filters['location']]
+
+            narr_resp = requests.get(
+                f"{settings.FASTAPI_BASE_URL}/incidents/classified-detailed",
+                params=params,
+                timeout=30,
+            )
             if narr_resp.ok:
                 # Extract summary/narrative text
                 # Try to get narrative from API response schema. Usually it is in mixed list.
@@ -1010,9 +1098,13 @@ class ReportGeneratorView(View):
 
         # Re-fetch operators for the dropdown in the response
         try:
-            op_resp = requests.get(f"{settings.FASTAPI_BASE_URL}/aggregates/top-n?category=operator&n=100")
+            op_resp = requests.get(
+                f"{settings.FASTAPI_BASE_URL}/aggregates/top-n",
+                params={'category': 'operator', 'n': 100},
+                timeout=30,
+            )
             operators = [d['category_value'] for d in op_resp.json()] if op_resp.ok else []
-        except:
+        except requests.RequestException:
             operators = []
 
         return render(request, self.template_name, {
